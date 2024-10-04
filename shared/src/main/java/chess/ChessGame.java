@@ -17,6 +17,7 @@ public class ChessGame {
     public ChessGame() {
         currentTeamsTurn = TeamColor.WHITE;
         mainBoard = new ChessBoard();
+        mainBoard.resetBoard();
     }
 
     /**
@@ -137,6 +138,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         boolean isCheckmate = true;
         ChessPosition checkPosition = null;
+        ChessPiece checkPiece = null;
 
         if (!isInCheck(teamColor)){
             return false;
@@ -144,9 +146,12 @@ public class ChessGame {
             for (int i=1; i<=8; i++) {
                 for (int j = 1; j <= 8; j++) {
                     checkPosition = new ChessPosition(i,j);
-                    if (mainBoard.getPiece(checkPosition).getTeamColor()==teamColor) {
-                        if(!validMoves(checkPosition).isEmpty()){
-                            isCheckmate = false;
+                    checkPiece = mainBoard.getPiece(checkPosition);
+                    if (checkPiece!=null){
+                        if (checkPiece.getTeamColor()==teamColor) {
+                            if(!validMoves(checkPosition).isEmpty()){
+                                isCheckmate = false;
+                            }
                         }
                     }
                 }

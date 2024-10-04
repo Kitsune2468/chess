@@ -13,7 +13,7 @@ public class ChessBoard {
     private ChessPiece[][] chessGrid = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+
     }
     public ChessBoard(ChessBoard copyBoard) {
         ChessPosition checkPosition = new ChessPosition(0,0);
