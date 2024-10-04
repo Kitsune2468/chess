@@ -10,11 +10,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor currentTurn;
+    private TeamColor currentTeamsTurn;
     private ChessBoard mainBoard;
 
     public ChessGame() {
-        currentTurn = TeamColor.WHITE;
+        currentTeamsTurn = TeamColor.WHITE;
         mainBoard = new ChessBoard();
     }
 
@@ -22,7 +22,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return currentTurn;
+        return currentTeamsTurn;
     }
 
     /**
@@ -31,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        currentTurn = team;
+        currentTeamsTurn = team;
     }
 
     /**
@@ -60,9 +60,17 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPiece newEndPiece = mainBoard.getPiece(move.getStartPosition());
-        mainBoard.addPiece(move.getEndPosition(),newEndPiece);
-        mainBoard.addPiece(move.getStartPosition(),null);
+        boolean moveIsValid = false;
+        Collection<ChessMove> pieceValidMoves = validMoves(move.getStartPosition());
+        for (ChessMove validMove : pieceValidMoves){
+            if (validMove==move){
+                moveIsValid = true;
+            }
+        }
+        if (!moveIsValid){
+            throw new InvalidMoveException();
+        }
+        movePiece(move);
     }
 
     /**
@@ -166,5 +174,24 @@ public class ChessGame {
             }
         }
         return kingPosition;
+    }
+
+    public boolean testMove(ChessMove testMove) {
+        ChessBoard saveBoard = mainBoard;
+        boolean isMoveValid = true;
+        this.movePiece(testMove);
+
+        if(isInCheck(this.getTeamTurn())){
+            isMoveValid = false;
+        }
+
+        mainBoard = saveBoard;
+        return isMoveValid;
+    }
+
+    public void movePiece(ChessMove move) {
+        ChessPiece newEndPiece = mainBoard.getPiece(move.getStartPosition());
+        mainBoard.addPiece(move.getEndPosition(),newEndPiece);
+        mainBoard.addPiece(move.getStartPosition(),null);
     }
 }
