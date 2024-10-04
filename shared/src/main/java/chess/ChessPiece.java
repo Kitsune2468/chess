@@ -13,11 +13,9 @@ import java.util.Objects;
 public class ChessPiece {
     private ChessGame.TeamColor pColor;
     private ChessPiece.PieceType pType;
-    private ChessPosition pPosition;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         pColor = pieceColor;
         pType = type;
-        pPosition = new ChessPosition(0,0);
     }
 
     /**
@@ -569,11 +567,11 @@ public class ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPiece that = (ChessPiece) o;
-        return pColor == that.pColor && pType == that.pType && Objects.equals(pPosition, that.pPosition);
+        return pColor == that.pColor && pType == that.pType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pColor, pType, pPosition);
+        return Objects.hash(pColor, pType);
     }
 }

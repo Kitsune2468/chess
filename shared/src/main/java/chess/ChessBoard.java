@@ -15,6 +15,15 @@ public class ChessBoard {
     public ChessBoard() {
         
     }
+    public ChessBoard(ChessBoard copyBoard) {
+        ChessPosition checkPosition = new ChessPosition(0,0);
+        for(int i=1;i<=8;i++){
+            for (int j=1; j<=8; j++){
+                checkPosition = new ChessPosition(i,j);
+                addPiece(checkPosition,copyBoard.getPiece(checkPosition));
+            }
+        }
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -88,12 +97,12 @@ public class ChessBoard {
     @Override
     public String toString() {
         String boardString = "";
-        for (int i = 0; i < 8; i++) {
+        for (int i = 7; i >= 0; i--) {
             for (int j = 0; j < 8; j++) {
                 boardString += "|";
                 if (chessGrid[i][j] == null) {
                     boardString += " ";
-                    break;
+                    continue;
                 }
                 switch (chessGrid[i][j].getPieceType()) {
                     case KING:
@@ -102,42 +111,42 @@ public class ChessBoard {
                         } else {
                             boardString += "k";
                         }
-                        break;
+                        continue;
                     case QUEEN:
                         if (chessGrid[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
                             boardString += "Q";
                         } else {
                             boardString += "q";
                         }
-                        break;
+                        continue;
                     case ROOK:
                         if (chessGrid[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
                             boardString += "R";
                         } else {
                             boardString += "r";
                         }
-                        break;
+                        continue;
                     case BISHOP:
                         if (chessGrid[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
                             boardString += "B";
                         } else {
                             boardString += "b";
                         }
-                        break;
+                        continue;
                     case KNIGHT:
                         if (chessGrid[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
                             boardString += "N";
                         } else {
                             boardString += "n";
                         }
-                        break;
+                        continue;
                     case PAWN:
                         if (chessGrid[i][j].getTeamColor() == ChessGame.TeamColor.BLACK) {
                             boardString += "P";
                         } else {
                             boardString += "p";
                         }
-                        break;
+                        continue;
                 }
             }
             boardString += "|\n";
