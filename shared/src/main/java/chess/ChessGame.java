@@ -76,18 +76,38 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         boolean moveIsValid = false;
         Collection<ChessMove> pieceValidMoves = validMoves(move.getStartPosition());
+        ChessPiece checkPiece = mainBoard.getPiece(move.getStartPosition());
+        if (checkPiece == null) {
+            throw new InvalidMoveException("No piece at location");
+        }
+        TeamColor colorTrying = mainBoard.getPiece(move.getStartPosition()).getTeamColor();
+        // Wrong Team trying to move
+        if (colorTrying != getTeamTurn()) {
+            throw new InvalidMoveException("Not your turn");
+        }
+        // No possible moves
         if (pieceValidMoves == null) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("No valid moves");
         }
         for (ChessMove validMove : pieceValidMoves){
             if (validMove.equals(move)){
                 moveIsValid = true;
             }
         }
+        // Move not valid
         if (!moveIsValid){
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Move not valid");
         }
+        // Move is valid
         movePiece(move);
+        switch (currentTeamsTurn) {
+            case BLACK:
+                currentTeamsTurn = TeamColor.WHITE;
+                break;
+            case WHITE:
+                currentTeamsTurn = TeamColor.BLACK;
+                break;
+        }
     }
 
     /**
@@ -172,6 +192,9 @@ public class ChessGame {
         ChessPosition checkPosition = null;
         ChessPiece checkPiece = null;
 
+        if (teamColor != currentTeamsTurn || isInCheck(teamColor)) {
+            return false;
+        }
         for (int i=1; i<=8; i++) {
             for (int j = 1; j <= 8; j++) {
                 checkPosition = new ChessPosition(i,j);
