@@ -1,5 +1,6 @@
 package chess;
 
+//import java.lang.runtime.TemplateRuntime;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -210,9 +211,10 @@ public class ChessGame {
     public boolean testMove(ChessMove testMove) {
         ChessBoard saveBoard = new ChessBoard(mainBoard);
         boolean isMoveValid = true;
+        TeamColor checkColor = mainBoard.getPiece(testMove.getStartPosition()).getTeamColor();
         this.movePiece(testMove);
 
-        if(isInCheck(this.getTeamTurn())){
+        if(isInCheck(checkColor)){
             isMoveValid = false;
         }
 
