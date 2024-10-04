@@ -9,9 +9,12 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private TeamColor teamTurn;
+    private ChessBoard mainBoard;
 
     public ChessGame() {
-
+        teamTurn = TeamColor.WHITE;
+        mainBoard = new ChessBoard();
     }
 
     /**

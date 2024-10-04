@@ -473,7 +473,7 @@ public class ChessPiece {
         ChessPiece startPiece = board.getPiece(new ChessPosition(startRow, startCol));
         ChessPiece checkPiece = null;
 
-        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+        if (startPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             //If black pawn, front is down
             baseOffset = -1;
             promotionRow = 1;
