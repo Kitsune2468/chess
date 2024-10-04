@@ -60,7 +60,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece newEndPiece = mainBoard.getPiece(move.getStartPosition());
+        mainBoard.addPiece(move.getEndPosition(),newEndPiece);
+        mainBoard.addPiece(move.getStartPosition(),null);
     }
 
     /**
@@ -106,7 +108,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
