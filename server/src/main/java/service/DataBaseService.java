@@ -2,28 +2,27 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.UserDAO;
 
 public class DataBaseService {
-    private static DataBaseService instance;
-    private static AuthDAO authDAO;
-    private static GameDAO gameDAO;
-    private static UserDAO userDAO;
+    private AuthDAO authDAO;
+    private GameDAO gameDAO;
+    private UserDAO userDAO;
 
+    public DataBaseService(AuthDAO inputAuthDAO, GameDAO inputGameDAO, UserDAO inputUserDAO) {
+        this.authDAO = inputAuthDAO;
+        this.gameDAO = inputGameDAO;
+        this.userDAO = inputUserDAO;
+    }
 
-    public static void clear() {
-        authDAO.clearAuths();
+    public void clear() {
+        authDAO.clear();
         gameDAO.clearGames();
         userDAO.clearUsers();
         return;
     }
 
-    public static DataBaseService getInstance() {
-        if (instance == null) {
-            instance = new DataBaseService();
-        }
-        return instance;
-    }
 }
 
 

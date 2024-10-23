@@ -1,11 +1,15 @@
 package dataaccess;
 
 import model.AuthData;
-import java.util.UUID;
+
 import java.util.ArrayList;
 
 public class MemoryAuthDAO implements AuthDAO {
     private ArrayList<AuthData> memoryAuths;
+
+    public MemoryAuthDAO() {
+        memoryAuths = new ArrayList<AuthData>();
+    }
 
     @Override
     public void addAuth(AuthData authData) {
@@ -17,10 +21,6 @@ public class MemoryAuthDAO implements AuthDAO {
         return null;
     }
 
-    @Override
-    public void updateAuth() {
-
-    }
 
     @Override
     public void deleteAuthByID(String id) {
@@ -28,7 +28,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void clearAuths() {
+    public void clear() {
         memoryAuths.clear();
     }
 }

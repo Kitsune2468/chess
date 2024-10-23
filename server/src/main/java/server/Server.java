@@ -1,8 +1,6 @@
 package server;
 
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import handlers.DataBaseHandler;
 import handlers.GameHandler;
 import handlers.UserHandler;
@@ -12,18 +10,34 @@ import service.UserService;
 import spark.*;
 
 public class Server {
-    MemoryUserDAO userDAO = new MemoryUserDAO();
-    MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    MemoryGameDAO gameDAO = new MemoryGameDAO();
+    UserDAO userDAO;
+    AuthDAO authDAO;
+    GameDAO gameDAO;
 
-    DataBaseService dataBaseService = new DataBaseService();
-    UserService userService = new UserService();
-    GameService gameService = new GameService();
+    DataBaseService dataBaseService;
+    GameService gameService;
+    UserService userService;
 
-    DataBaseHandler dataBaseHandler = new DataBaseHandler();
-    UserHandler userHandler = new UserHandler();
-    GameHandler gameHandler = new GameHandler();
 
+    DataBaseHandler dataBaseHandler;
+    GameHandler gameHandler;
+    UserHandler userHandler;
+
+
+    public Server() {
+        userDAO = new MemoryUserDAO();
+        authDAO = new MemoryAuthDAO();
+        gameDAO = new MemoryGameDAO();
+
+        dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO);
+        gameService = new GameService(gameDAO);
+        userService = new UserService(userDAO);
+
+        dataBaseHandler = new DataBaseHandler(dataBaseService);
+        gameHandler = new GameHandler(gameService);
+        userHandler = new UserHandler(userService);
+
+    }
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 

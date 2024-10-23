@@ -6,9 +6,14 @@ import spark.Request;
 import spark.Response;
 
 public class DataBaseHandler {
+    DataBaseService dataBaseService;
+    public DataBaseHandler(DataBaseService inputDataBaseService) {
+        dataBaseService = inputDataBaseService;
+    }
+
     public Response clear(Request request, Response result) throws DataAccessException {
         try {
-            DataBaseService.clear();
+            dataBaseService.clear();
             result = null;
         } catch (Exception e) {
             throw new RuntimeException(e);
