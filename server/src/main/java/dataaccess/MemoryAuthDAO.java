@@ -3,6 +3,7 @@ package dataaccess;
 import model.AuthData;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class MemoryAuthDAO implements AuthDAO {
     private ArrayList<AuthData> memoryAuths;
@@ -18,7 +19,13 @@ public class MemoryAuthDAO implements AuthDAO {
 
     @Override
     public AuthData getAuthByID(String id) {
-        return null;
+        AuthData foundAuth = null;
+        for(AuthData searchAuth : memoryAuths) {
+            if (searchAuth.authToken() == id) {
+                foundAuth = searchAuth;
+            }
+        }
+        return foundAuth;
     }
 
 
@@ -30,5 +37,14 @@ public class MemoryAuthDAO implements AuthDAO {
     @Override
     public void clear() {
         memoryAuths.clear();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (memoryAuths.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

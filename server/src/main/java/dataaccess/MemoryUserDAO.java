@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.AuthData;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.util.ArrayList;
 
@@ -18,8 +19,14 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public UserData getUserByName(String name) {
-        return null;
+    public UserData getUserByUsername(String name) {
+        UserData foundUser = null;
+        for(UserData searchUser : memoryUsers) {
+            if (searchUser.username() == name) {
+                foundUser = searchUser;
+            }
+        }
+        return foundUser;
     }
 
     @Override
@@ -28,7 +35,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void deleteUserByName(String name) {
+    public void deleteUserByUsername(String name) {
         memoryUsers.forEach(user -> {
             if (user.username().equals(name)) {
                 memoryUsers.remove(user);
@@ -40,5 +47,14 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public void clear() {
         memoryUsers.clear();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if (memoryUsers.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

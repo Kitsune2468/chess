@@ -23,6 +23,15 @@ public class DataBaseService {
         return;
     }
 
+    public boolean checkEmpty() {
+        if (authDAO.isEmpty() &&
+                gameDAO.isEmpty() &&
+                userDAO.isEmpty()){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 

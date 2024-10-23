@@ -3,9 +3,10 @@ import model.UserData;
 
 public interface UserDAO {
     public void addUser(UserData userData);
-    public UserData getUserByName(String name);
+    public UserData getUserByUsername(String name);
     public void updateUser();
-    public void deleteUserByName(String name);
+    public void deleteUserByUsername(String name);
     public void clear();
+    public boolean isEmpty();
 }
 

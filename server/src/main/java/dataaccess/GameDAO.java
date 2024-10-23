@@ -7,4 +7,5 @@ public interface GameDAO {
     public void updateGame();
     public void deleteGameByString(String gameName);
     public void clear();
+    public boolean isEmpty();
 }
