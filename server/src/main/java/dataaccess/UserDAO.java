@@ -6,6 +6,6 @@ public interface UserDAO {
     public UserData getUserByName(String name);
     public void updateUser();
     public void deleteUserByName(String name);
-    public void clearUsers();
+    public void clear();
 }
 

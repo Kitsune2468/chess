@@ -7,6 +7,10 @@ import java.util.ArrayList;
 public class MemoryGameDAO implements GameDAO {
     private ArrayList<GameData> memoryGames;
 
+    public MemoryGameDAO() {
+        memoryGames = new ArrayList<GameData>();
+    }
+
     @Override
     public void addGame(GameData gameData) {
         memoryGames.add(gameData);
@@ -28,7 +32,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void clearGames() {
+    public void clear() {
         memoryGames.clear();
     }
 }

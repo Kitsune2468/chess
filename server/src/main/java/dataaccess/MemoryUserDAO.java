@@ -1,11 +1,16 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
 
 import java.util.ArrayList;
 
 public class MemoryUserDAO implements UserDAO {
     private ArrayList<UserData> memoryUsers;
+
+    public MemoryUserDAO() {
+        memoryUsers = new ArrayList<UserData>();
+    }
 
     @Override
     public void addUser(UserData userData) {
@@ -33,7 +38,7 @@ public class MemoryUserDAO implements UserDAO {
 
 
     @Override
-    public void clearUsers() {
+    public void clear() {
         memoryUsers.clear();
     }
 }

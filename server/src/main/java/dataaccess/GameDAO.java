@@ -6,5 +6,5 @@ public interface GameDAO {
     public GameData getGameByString(String gameName);
     public void updateGame();
     public void deleteGameByString(String gameName);
-    public void clearGames();
+    public void clear();
 }
