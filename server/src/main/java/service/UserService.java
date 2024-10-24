@@ -19,7 +19,14 @@ public class UserService {
     }
 
     public AuthData addUser(UserData newUserData) throws DataAccessException {
-        if (userDAO.getUserByUsername(newUserData.username()) != null) {
+        String foundUsername = newUserData.username();
+        String foundPassword = newUserData.password();
+
+        if (foundUsername == null || foundPassword == null) {
+            throw new DataAccessException("null username or password");
+        }
+        UserData foundUser = userDAO.getUserByUsername(newUserData.username());
+        if (foundUser != null) {
             throw new DataAccessException("already taken");
         }
         try {
@@ -39,9 +46,12 @@ public class UserService {
             AuthData newAuth = null;
 
             UserData foundUser = userDAO.getUserByUsername(username);
+            if (foundUser == null) {
+                throw new DataAccessException("unauthorized");
+            }
             String foundUsername = foundUser.username();
             String foundPassword = foundUser.password();
-            if (username == foundUsername && password == foundPassword && authDAO.getAuthByUsername(username) == null) {
+            if (username.equals(foundUsername) && password.equals(foundPassword)) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
                 throw new DataAccessException("unauthorized");

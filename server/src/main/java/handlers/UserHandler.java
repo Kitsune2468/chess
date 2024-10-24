@@ -2,11 +2,8 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.NotAuthorizedException;
 import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
-import service.DataBaseService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -17,11 +14,13 @@ public class UserHandler {
         userService = inputUserService;
     }
 
-    public Object addUser(Request request, Response result) throws NotAuthorizedException {
+    public Object addUser(Request request, Response result) throws DataAccessException {
         String resultBody;
         UserData userData = new Gson().fromJson(request.body(), UserData.class);
-
-        if (userData.username() == null || userData.password() == null || userData.email() == null) {
+        String foundUsername = userData.username();
+        String foundPassword = userData.password();
+        String foundEmail = userData.email();
+        if (foundUsername == null || foundPassword == null || foundEmail == null) {
             result.status(400);
             resultBody = "bad request";
             return resultBody;
@@ -34,8 +33,9 @@ public class UserHandler {
         } catch (DataAccessException e) {
             if (e.getMessage().toString().equals("already taken")) {
                 result.status(403);
+            } else {
+                result.status(500);
             }
-            result.status(500);
             resultBody = "{ \"message\": \"Error: "+e.getMessage()+"\" }";
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
@@ -43,12 +43,12 @@ public class UserHandler {
         return resultBody;
     }
 
-    public Object login(Request request, Response result) throws NotAuthorizedException {
+    public Object login(Request request, Response result) throws DataAccessException {
         String resultBody;
         UserData userData = new Gson().fromJson(request.body(), UserData.class);
 
         if (userData.username() == null || userData.password() == null) {
-            throw new NotAuthorizedException("bad request");
+            throw new DataAccessException("bad request");
         }
 
         try {
@@ -67,7 +67,7 @@ public class UserHandler {
         return resultBody;
     }
 
-    public Object logout(Request request, Response result) throws NotAuthorizedException {
+    public Object logout(Request request, Response result) throws DataAccessException {
         String resultBody;
         String authToken = request.headers("authorization");
 

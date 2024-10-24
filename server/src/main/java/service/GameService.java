@@ -58,6 +58,9 @@ public class GameService {
             throw new DataAccessException("unauthorized");
         }
         GameData gameToJoin = gameDAO.getGameByID(gameID);
+        if (gameToJoin == null || joinColor == null) {
+            throw new DataAccessException("bad request");
+        }
         String teamTaken;
         if (joinColor.equals("BLACK")) {
             teamTaken = gameToJoin.blackUsername();

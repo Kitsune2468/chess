@@ -2,10 +2,7 @@ package handlers;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
-import dataaccess.NotAuthorizedException;
 import model.GameData;
-import model.UserData;
-import service.DataBaseService;
 import service.GameService;
 import service.Requests.CreateGameRequest;
 import service.Requests.GameListResult;
@@ -19,7 +16,7 @@ public class GameHandler {
         gameService = inputGameService;
     }
 
-    public Object createGame(Request request, Response result) throws NotAuthorizedException {
+    public Object createGame(Request request, Response result) throws DataAccessException {
         String resultBody;
         String authToken = request.headers("authorization");
         CreateGameRequest newGameRequest = new Gson().fromJson(request.body(), CreateGameRequest.class);
@@ -44,7 +41,7 @@ public class GameHandler {
         return resultBody;
     }
 
-    public Object listGames(Request request, Response result) throws NotAuthorizedException {
+    public Object listGames(Request request, Response result) throws DataAccessException {
         String resultBody;
         String authToken = request.headers("authorization");
 
@@ -66,7 +63,7 @@ public class GameHandler {
         return resultBody;
     }
 
-    public Object joinGame(Request request, Response result) throws NotAuthorizedException {
+    public Object joinGame(Request request, Response result) throws DataAccessException {
         String resultBody = "{}";
         String authToken = request.headers("authorization");
 
