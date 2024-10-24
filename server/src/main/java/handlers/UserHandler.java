@@ -79,6 +79,8 @@ public class UserHandler {
         } catch (DataAccessException e) {
             if (e.getMessage().toString().equals("unauthorized")) {
                 result.status(401);
+                resultBody = "{ \"message\": \"Error: "+e.getMessage()+"\" }";
+                return resultBody;
             } else {
                 result.status(500);
             }

@@ -51,6 +51,9 @@ public class UserService {
             }
             String foundUsername = foundUser.username();
             String foundPassword = foundUser.password();
+            if (authDAO.getAuthByUsername(username) != null) {
+                throw new DataAccessException("unauthorized");
+            }
             if (username.equals(foundUsername) && password.equals(foundPassword)) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
@@ -76,8 +79,8 @@ public class UserService {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         UserService that = (UserService) o;
         return Objects.equals(userDAO, that.userDAO);
     }

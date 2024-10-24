@@ -49,10 +49,10 @@ public class GameHandler {
             GameListResult games = gameService.listGames(authToken);
             resultBody = new Gson().toJson(games);
         } catch (DataAccessException e) {
-            if (e.getMessage().toString().equals("unauthorized")) {
-                result.status(401);
-            } else if (e.getMessage().toString().equals("bad request")) {
+            if (e.getMessage().toString().equals("bad request")) {
                 result.status(400);
+            } else if (e.getMessage().toString().equals("unauthorized")) {
+                result.status(401);
             } else {
                 result.status(500);
             }

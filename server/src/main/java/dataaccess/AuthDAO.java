@@ -7,4 +7,5 @@ public interface AuthDAO {
     public boolean deleteAuthByToken(String id);
     public void clear();
     public boolean isEmpty();
+    public AuthData getAuthByUsername(String username);
 }

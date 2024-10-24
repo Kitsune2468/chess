@@ -37,6 +37,18 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
+    public AuthData getAuthByUsername(String username) {
+        AuthData foundAuth = null;
+        for(AuthData searchAuth : memoryAuths) {
+            String searchUsername = searchAuth.username();
+            if (searchUsername.equals(username)) {
+                foundAuth = searchAuth;
+            }
+        }
+        return foundAuth;
+    }
+
+    @Override
     public boolean deleteAuthByToken(String token) {
         for(AuthData searchAuth : memoryAuths) {
             String searchToken = searchAuth.authToken();
@@ -61,6 +73,8 @@ public class MemoryAuthDAO implements AuthDAO {
             return false;
         }
     }
+
+
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
