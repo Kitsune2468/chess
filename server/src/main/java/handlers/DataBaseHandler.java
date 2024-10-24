@@ -13,14 +13,15 @@ public class DataBaseHandler {
     }
 
     public Object clear(Request request, Response result) throws DataAccessException {
-        String body;
+        String resultBody;
         try {
             dataBaseService.clear();
             result.status(200);
-            body = "{}";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            resultBody = "{}";
+        } catch (Error e) {
+            result.status(500);
+            resultBody = "{ \"message\": \"Error:"+e.getMessage()+"\" }";
         }
-        return body;
+        return resultBody;
     }
 }

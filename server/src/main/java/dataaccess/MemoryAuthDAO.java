@@ -3,7 +3,7 @@ package dataaccess;
 import model.AuthData;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
     private ArrayList<AuthData> memoryAuths;
@@ -13,25 +13,38 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void addAuth(AuthData authData) {
-        memoryAuths.add(authData);
+    public AuthData addAuth(String username) {
+        String token = generateToken();
+        AuthData newAuth = new AuthData(token, username);
+        memoryAuths.add(newAuth);
+        return newAuth;
+    }
+
+    public void addAuth(AuthData newAuthData) {
+        memoryAuths.add(newAuthData);
     }
 
     @Override
-    public AuthData getAuthByID(String id) {
+    public AuthData getAuthByUsername(String username) {
         AuthData foundAuth = null;
         for(AuthData searchAuth : memoryAuths) {
-            if (searchAuth.authToken() == id) {
+            if (searchAuth.username() == username) {
                 foundAuth = searchAuth;
             }
         }
         return foundAuth;
     }
 
-
     @Override
-    public void deleteAuthByID(String id) {
-
+    public boolean deleteAuthByToken(String token) {
+        for(AuthData searchAuth : memoryAuths) {
+            String searchToken = searchAuth.authToken();
+            if (searchToken.equals(token)) {
+                memoryAuths.remove(searchAuth);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -46,5 +59,9 @@ public class MemoryAuthDAO implements AuthDAO {
         } else {
             return false;
         }
+    }
+
+    public static String generateToken() {
+        return UUID.randomUUID().toString();
     }
 }
