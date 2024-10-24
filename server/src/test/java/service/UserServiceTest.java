@@ -66,7 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testDoubleLogin() throws Exception {
+    public void testLoginNoPassword() throws Exception {
         UserData testUserData = new UserData("username","password","generic@email.com");
 
         UserService testUserService = new UserService(new MemoryUserDAO(), new MemoryAuthDAO());
@@ -74,9 +74,9 @@ public class UserServiceTest {
         testUserService.logout(testToken.authToken());
 
         try {
+            testUserData = new UserData("username",null,"generic@email.com");
             testUserService.login(testUserData);
-            testUserService.login(testUserData);
-            Assertions.fail("Logged in twice");
+            Assertions.fail("Logged in without password");
         } catch(DataAccessException e) {
             Assertions.assertTrue(true);
         }
