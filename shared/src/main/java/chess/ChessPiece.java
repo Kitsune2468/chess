@@ -54,22 +54,22 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         switch (board.getPiece(myPosition).getPieceType()) {
             case KING:
-                return KingMoves(board, myPosition);
+                return kingMoves(board, myPosition);
             case QUEEN:
-                return QueenMoves(board, myPosition);
+                return queenMoves(board, myPosition);
             case BISHOP:
-                return BishopMoves(board, myPosition);
+                return bishopMoves(board, myPosition);
             case ROOK:
-                return RookMoves(board, myPosition);
+                return rookMoves(board, myPosition);
             case KNIGHT:
-                return KnightMoves(board, myPosition);
+                return knightMoves(board, myPosition);
             case PAWN:
-                return PawnMoves(board, myPosition);
+                return pawnMoves(board, myPosition);
         }
         return new ArrayList<ChessMove>();
     }
 
-    public ArrayList<ChessMove> KingMoves(ChessBoard board, ChessPosition myPosition) {
+    public ArrayList<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
@@ -95,148 +95,18 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    public ArrayList<ChessMove> QueenMoves(ChessBoard board, ChessPosition myPosition) {
+    public ArrayList<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
 
-        //Check left-up diagonal
-        int counter = 1;
-        while(myPosition.getRow()+counter <= 8 && myPosition.getColumn()-counter >= 1) {
-            int curRow = startRow + counter;
-            int curCol = startCol - counter;
-
-            if (board.getPiece(new ChessPosition(curRow, curCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check right-up diagonal
-        counter = 1;
-        while(myPosition.getRow()+counter <= 8 && myPosition.getColumn()+counter <= 8) {
-            int curRow = startRow + counter;
-            int curCol = startCol + counter;
-
-            if (board.getPiece(new ChessPosition(curRow, curCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check right-down diagonal
-        counter = 1;
-        while(myPosition.getRow()-counter >= 1 && myPosition.getColumn()+counter <= 8) {
-            int curRow = startRow - counter;
-            int curCol = startCol + counter;
-
-            if (board.getPiece(new ChessPosition(curRow, curCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check left-down diagonal
-        counter = 1;
-        while(myPosition.getRow()-counter >= 1 && myPosition.getColumn()-counter >= 1) {
-            int curRow = startRow - counter;
-            int curCol = startCol - counter;
-
-            if (board.getPiece(new ChessPosition(curRow, curCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,curCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(curRow, curCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check Up
-        counter = 1;
-        while(myPosition.getRow()+counter <= 8) {
-            int curRow = startRow + counter;
-
-            if (board.getPiece(new ChessPosition(curRow, startCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,startCol),null));
-            } else if (board.getPiece(new ChessPosition(curRow, startCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,startCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(curRow, startCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check Down
-        counter = 1;
-        while(myPosition.getRow()-counter >= 1) {
-            int curRow = startRow - counter;
-
-            if (board.getPiece(new ChessPosition(curRow, startCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,startCol),null));
-            } else if (board.getPiece(new ChessPosition(curRow, startCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(curRow,startCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(curRow, startCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check Right
-        counter = 1;
-        while(myPosition.getColumn()+counter <= 8) {
-            int curCol = startCol + counter;
-
-            if (board.getPiece(new ChessPosition(startRow, curCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(startRow,curCol),null));
-            } else if (board.getPiece(new ChessPosition(startRow, curCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(startRow,curCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(startRow, curCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
-        //Check Left
-        counter = 1;
-        while(myPosition.getColumn()-counter >= 1) {
-            int curCol = startCol - counter;
-
-            if (board.getPiece(new ChessPosition(startRow, curCol)) == null) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(startRow,curCol),null));
-            } else if (board.getPiece(new ChessPosition(startRow, curCol)).getTeamColor() != pColor) {
-                possibleMoves.add(new ChessMove(myPosition,new ChessPosition(startRow,curCol),null));
-                break;
-            } else if (board.getPiece(new ChessPosition(startRow, curCol)).getTeamColor() == pColor) {
-                break;
-            }
-
-            counter++;
-        }
+        possibleMoves.addAll(bishopMoves(board, myPosition));
+        possibleMoves.addAll(rookMoves(board, myPosition));
 
         return possibleMoves;
     }
 
-    public ArrayList<ChessMove> BishopMoves(ChessBoard board, ChessPosition myPosition) {
+    public ArrayList<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
@@ -312,7 +182,7 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    public ArrayList<ChessMove> RookMoves(ChessBoard board, ChessPosition myPosition) {
+    public ArrayList<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
         ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
@@ -385,7 +255,7 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    public ArrayList<ChessMove> KnightMoves(ChessBoard board, ChessPosition myPosition) {
+    public ArrayList<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
         int checkRow = startRow;
@@ -460,7 +330,7 @@ public class ChessPiece {
         return possibleMoves;
     }
 
-    public ArrayList<ChessMove> PawnMoves(ChessBoard board, ChessPosition myPosition) {
+    public ArrayList<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
         int checkRow = startRow;
@@ -564,8 +434,8 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         ChessPiece that = (ChessPiece) o;
         return pColor == that.pColor && pType == that.pType;
     }

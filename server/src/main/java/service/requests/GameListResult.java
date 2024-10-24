@@ -1,7 +1,4 @@
-package service.Requests;
-
-import dataaccess.GameDAO;
-import model.GameData;
+package service.requests;
 
 import java.util.ArrayList;
 

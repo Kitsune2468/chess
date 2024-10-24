@@ -1,13 +1,12 @@
 package service;
 
-import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
-import service.Requests.GameListResult;
-import service.Requests.GameTemplateResult;
+import service.requests.GameListResult;
+import service.requests.GameTemplateResult;
 
 import java.util.ArrayList;
 import java.util.Objects;

@@ -32,20 +32,6 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     @Override
-    public void updateUser() {
-
-    }
-
-    @Override
-    public void deleteUserByUsername(String name) {
-        memoryUsers.forEach(user -> {
-            if (user.username().equals(name)) {
-                memoryUsers.remove(user);
-            }
-        });
-    }
-
-    @Override
     public void clear() {
         memoryUsers.clear();
     }
@@ -61,8 +47,8 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         MemoryUserDAO that = (MemoryUserDAO) o;
         return Objects.equals(memoryUsers, that.memoryUsers);
     }

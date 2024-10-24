@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
 import service.GameService;
-import service.Requests.CreateGameRequest;
-import service.Requests.GameListResult;
-import service.Requests.JoinGameRequest;
+import service.requests.CreateGameRequest;
+import service.requests.GameListResult;
+import service.requests.JoinGameRequest;
 import spark.Request;
 import spark.Response;
 

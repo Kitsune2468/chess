@@ -23,6 +23,7 @@ public class UserHandler {
         if (foundUsername == null || foundPassword == null || foundEmail == null) {
             result.status(400);
             resultBody = "bad request";
+            resultBody = "{ \"message\": \"Error: bad request\" }";
             return resultBody;
         }
 

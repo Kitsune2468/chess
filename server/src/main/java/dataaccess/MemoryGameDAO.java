@@ -1,13 +1,11 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
-import service.Requests.GameTemplateResult;
+import service.requests.GameTemplateResult;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.UUID;
 
 public class MemoryGameDAO implements GameDAO {
     private ArrayList<GameData> memoryGames;
@@ -50,11 +48,6 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame() {
-
-    }
-
-    @Override
     public void joinGame(int gameID, String joinTeamColor, String playerName) {
         for(GameData searchGame : memoryGames) {
             int foundGameID = searchGame.gameID();
@@ -78,11 +71,6 @@ public class MemoryGameDAO implements GameDAO {
                 }
             }
         }
-    }
-
-    @Override
-    public void deleteGameByString(String gameName) {
-
     }
 
     @Override
@@ -111,8 +99,8 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         MemoryGameDAO that = (MemoryGameDAO) o;
         return gameCounter == that.gameCounter;
     }
