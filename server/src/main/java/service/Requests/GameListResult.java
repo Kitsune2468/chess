@@ -1,4 +1,9 @@
 package service.Requests;
 
-public record GameListResult() {
+import dataaccess.GameDAO;
+import model.GameData;
+
+import java.util.ArrayList;
+
+public record GameListResult(ArrayList<GameTemplateResult> games) {
 }
