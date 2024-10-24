@@ -24,7 +24,7 @@ public class DataBaseServiceTest {
         testMemoryAuth.addAuth(new AuthData("1234","username"));
 
         MemoryGameDAO testMemoryGame = new MemoryGameDAO();
-        testMemoryGame.addGame(new GameData(1234,"white","black","testGame",new ChessGame()));
+        testMemoryGame.addGame("testGame");
 
         MemoryUserDAO testMemoryUser = new MemoryUserDAO();
         testMemoryUser.addUser(new UserData("username","password","generic@email.com"));

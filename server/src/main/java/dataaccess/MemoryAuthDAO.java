@@ -36,6 +36,17 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
+    public AuthData getAuthByToken(String token) {
+        AuthData foundAuth = null;
+        for(AuthData searchAuth : memoryAuths) {
+            if (searchAuth.authToken() == token) {
+                foundAuth = searchAuth;
+            }
+        }
+        return foundAuth;
+    }
+
+    @Override
     public boolean deleteAuthByToken(String token) {
         for(AuthData searchAuth : memoryAuths) {
             String searchToken = searchAuth.authToken();

@@ -1,27 +1,35 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class MemoryGameDAO implements GameDAO {
     private ArrayList<GameData> memoryGames;
+    private int gameCounter;
 
     public MemoryGameDAO() {
         memoryGames = new ArrayList<GameData>();
+        gameCounter = 1;
     }
 
     @Override
-    public void addGame(GameData gameData) {
-        memoryGames.add(gameData);
+    public int addGame(String gameName) {
+        GameData newGame = new GameData(gameCounter,null, null, gameName, new ChessGame());
+        memoryGames.add(newGame);
+        gameCounter++;
+        return 0;
     }
 
     @Override
     public GameData getGameByString(String gameName) {
         GameData foundGame = null;
         for(GameData searchAuth : memoryGames) {
-            if (searchAuth.gameName() == gameName) {
+            String foundGameName = searchAuth.gameName();
+            if (foundGameName.equals(gameName)) {
                 foundGame = searchAuth;
             }
         }
