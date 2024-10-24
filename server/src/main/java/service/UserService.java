@@ -51,9 +51,7 @@ public class UserService {
             }
             String foundUsername = foundUser.username();
             String foundPassword = foundUser.password();
-            if (authDAO.getAuthByUsername(username) != null) {
-                throw new DataAccessException("unauthorized");
-            }
+
             if (username.equals(foundUsername) && password.equals(foundPassword)) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
