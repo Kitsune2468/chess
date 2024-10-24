@@ -48,7 +48,9 @@ public class UserHandler {
         String resultBody;
         UserData userData = new Gson().fromJson(request.body(), UserData.class);
 
-        if (userData.username() == null || userData.password() == null) {
+        String foundUsername = userData.username();
+        String foundPassword = userData.password();
+        if (foundUsername == null || foundPassword == null) {
             throw new DataAccessException("bad request");
         }
 

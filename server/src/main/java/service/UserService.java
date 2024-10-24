@@ -45,6 +45,10 @@ public class UserService {
             String password = userLoginData.password();
             AuthData newAuth = null;
 
+            if (username == null || password == null) {
+                throw new DataAccessException("null username or password");
+            }
+
             UserData foundUser = userDAO.getUserByUsername(username);
             if (foundUser == null) {
                 throw new DataAccessException("unauthorized");
