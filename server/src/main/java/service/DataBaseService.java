@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 
 public class DataBaseService {
     private AuthDAO authDAO;
@@ -16,14 +13,14 @@ public class DataBaseService {
         this.userDAO = inputUserDAO;
     }
 
-    public void clear() {
+    public void clear() throws DataAccessException {
         authDAO.clear();
         gameDAO.clear();
         userDAO.clear();
         return;
     }
 
-    public boolean checkEmpty() {
+    public boolean checkEmpty() throws DataAccessException {
         if (authDAO.isEmpty() &&
                 gameDAO.isEmpty() &&
                 userDAO.isEmpty()){

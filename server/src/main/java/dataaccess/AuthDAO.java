@@ -2,10 +2,15 @@ package dataaccess;
 import model.AuthData;
 
 public interface AuthDAO {
-    public AuthData addAuth(String username);
-    public AuthData getAuthByToken(String token);
-    public boolean deleteAuthByToken(String id);
-    public void clear();
-    public boolean isEmpty();
-    public AuthData getAuthByUsername(String username);
+    public AuthData addAuth(String username) throws DataAccessException;
+
+    public AuthData getAuthByToken(String token) throws DataAccessException;
+
+    public boolean deleteAuthByToken(String id) throws DataAccessException;
+
+    public void clear() throws DataAccessException;
+
+    public boolean isEmpty() throws DataAccessException;
+
+    public AuthData getAuthByUsername(String username) throws DataAccessException;
 }
