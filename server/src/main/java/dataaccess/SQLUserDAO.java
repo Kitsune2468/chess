@@ -1,6 +1,8 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,79 +11,81 @@ import java.util.Objects;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLUserDAO implements UserDAO {
-    private ArrayList<UserData> memoryUsers;
 
     public SQLUserDAO() throws DataAccessException {
-        memoryUsers = new ArrayList<UserData>();
         configureDatabase();
     }
 
     @Override
     public void addUser(UserData userData) throws DataAccessException {
-        memoryUsers.add(userData);
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("INSERT INTO users (username, hashedPassword, email) VALUES(?, ?, ?)")) {
+                statement.setString(1, userData.username());
+                statement.setString(2, userData.password());
+                statement.setString(3, userData.email());
+                statement.executeUpdate();
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
-    public UserData getUserByUsername(String name) throws DataAccessException {
-        UserData foundUser = null;
-        for(UserData searchUser : memoryUsers) {
-            String searchName =searchUser.username().toString();
-            if (searchName.equals(name)) {
-                return searchUser;
+    public UserData getUserByUsername(String username) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT username, hashedPassword, email FROM users WHERE username=?")) {
+                statement.setString(1, username);
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    String hashedPassword = results.getString("hashedPassword");
+                    String email = results.getString("email");
+                    return new UserData(username, hashedPassword, email);
+                }
             }
+        } catch (SQLException e) {
+            throw new DataAccessException("Username does not exist");
         }
-        return foundUser;
     }
 
     @Override
     public void clear() throws DataAccessException {
-        memoryUsers.clear();
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("TRUNCATE users")) {
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Clear auth failed");
+        }
     }
 
     @Override
     public boolean isEmpty() throws DataAccessException {
-        if (memoryUsers.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    //if (param instanceof String p) ps.setString(i + 1, p);
-                    //else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    //else if (param instanceof PetType p) ps.setString(i + 1, p.toString());
-                    //else if (param == null) ps.setNull(i + 1, NULL);
+            try (var statement = conn.prepareStatement("SELECT count(*) AS usersCount FROM users")) {
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    int usersCount = results.getInt("usersCount");
+                    if (usersCount == 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException("Failed to check if auth was empty");
         }
     }
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
+            CREATE TABLE IF NOT EXISTS users (
+              `username` varchar(256) NOT NULL,
+              `hashedPassword` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
+              PRIMARY KEY (`name`),
               INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            )
             """
     };
 
@@ -98,23 +102,4 @@ public class SQLUserDAO implements UserDAO {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-        SQLUserDAO that = (SQLUserDAO) o;
-        return Objects.equals(memoryUsers, that.memoryUsers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(memoryUsers);
-    }
-
-    @Override
-    public String toString() {
-        return "MemoryUserDAO{" +
-                "memoryUsers=" + memoryUsers +
-                '}';
-    }
 }
