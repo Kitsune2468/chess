@@ -10,7 +10,6 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class SQLAuthDAO implements AuthDAO {
-    private ArrayList<AuthData> memoryAuths;
 
     public SQLAuthDAO() throws DataAccessException {
         configureDatabase();
@@ -34,83 +33,82 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuthByToken(String token) {
-        AuthData foundAuth = null;
-        for(AuthData searchAuth : memoryAuths) {
-            String searchToken = searchAuth.authToken();
-            if (searchToken.equals(token)) {
-                foundAuth = searchAuth;
+    public AuthData getAuthByToken(String token) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT hashedUsername, authToken FROM auth WHERE authToken=?")) {
+                statement.setString(1, token);
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    var userName = results.getString("authToken");
+                    return new AuthData(userName, token);
+                }
             }
+        } catch (SQLException e) {
+            throw new DataAccessException("Auth token does not exist");
         }
-        return foundAuth;
     }
 
     @Override
-    public AuthData getAuthByUsername(String hashedUsername) {
-        AuthData foundAuth = null;
-        /*for(AuthData searchAuth : memoryAuths) {
-            String searchUsername = searchAuth.username();
-            if (searchUsername.equals(username)) {
-                foundAuth = searchAuth;
+    public AuthData getAuthByUsername(String hashedUsername) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT hashedUsername, authToken FROM auth WHERE hashedUsername=?")) {
+                statement.setString(1, hashedUsername);
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    var authToken = results.getString("authToken");
+                    return new AuthData(hashedUsername, authToken);
+                }
             }
-        }*/
-        return foundAuth;
+        } catch (SQLException e) {
+            throw new DataAccessException("Username does not exist");
+        }
     }
 
     @Override
-    public boolean deleteAuthByToken(String token) {
-        /*for(AuthData searchAuth : memoryAuths) {
-            String searchToken = searchAuth.authToken();
-            if (searchToken.equals(token)) {
-                memoryAuths.remove(searchAuth);
+    public boolean deleteAuthByToken(String token) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("DELETE hashedUsername, authToken FROM auth WHERE authToken=?")) {
+                statement.setString(1, token);
+                statement.executeUpdate();
                 return true;
             }
-        }*/
-        return false;
+        } catch (SQLException e) {
+            throw new DataAccessException("Username does not exist");
+        }
     }
 
     @Override
-    public void clear() throws DataAccessException{
-        var statement = "TRUNCATE auth";
-        executeUpdate(statement);
+    public void clear() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("TRUNCATE auth")) {
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Clear auth failed");
+        }
     }
 
     @Override
-    public boolean isEmpty() {
-        /*if (memoryAuths.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }*/
-        return false;
+    public boolean isEmpty() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT count(*) AS authCount FROM auth")) {
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    int authCount = results.getInt("authCount");
+                    if (authCount == 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Username does not exist");
+        }
     }
 
     public static String generateToken() {
         return UUID.randomUUID().toString();
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    //if (param instanceof String p) ps.setString(i + 1, p);
-                    //else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    //else if (param instanceof PetType p) ps.setString(i + 1, p.toString());
-                    //else if (param == null) ps.setNull(i + 1, NULL);
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
     }
 
     private final String[] createStatements = {
