@@ -13,20 +13,24 @@ public class SQLAuthDAO implements AuthDAO {
     private ArrayList<AuthData> memoryAuths;
 
     public SQLAuthDAO() throws DataAccessException {
-        memoryAuths = new ArrayList<AuthData>();
         configureDatabase();
     }
 
     @Override
-    public AuthData addAuth(String username) {
+    public AuthData addAuth(String hashedUsername) throws DataAccessException {
         String token = generateToken();
-        AuthData newAuth = new AuthData(token, username);
-        memoryAuths.add(newAuth);
-        return newAuth;
-    }
+        AuthData newAuth = new AuthData(token, hashedUsername);
 
-    public void addAuth(AuthData newAuthData) {
-        memoryAuths.add(newAuthData);
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("INSERT INTO auth (username, authToken) VALUES(?, ?)")) {
+                statement.setString(1, newAuth.username());
+                statement.setString(2, newAuth.authToken());
+                statement.executeUpdate();
+                return newAuth;
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
@@ -42,43 +46,43 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuthByUsername(String username) {
+    public AuthData getAuthByUsername(String hashedUsername) {
         AuthData foundAuth = null;
-        for(AuthData searchAuth : memoryAuths) {
+        /*for(AuthData searchAuth : memoryAuths) {
             String searchUsername = searchAuth.username();
             if (searchUsername.equals(username)) {
                 foundAuth = searchAuth;
             }
-        }
+        }*/
         return foundAuth;
     }
 
     @Override
     public boolean deleteAuthByToken(String token) {
-        for(AuthData searchAuth : memoryAuths) {
+        /*for(AuthData searchAuth : memoryAuths) {
             String searchToken = searchAuth.authToken();
             if (searchToken.equals(token)) {
                 memoryAuths.remove(searchAuth);
                 return true;
             }
-        }
+        }*/
         return false;
     }
 
     @Override
     public void clear() throws DataAccessException{
-        // INSERT AuthDB NAME HERE ONCE DECIDED
-        var statement = "TRUNCATE ______";
+        var statement = "TRUNCATE auth";
         executeUpdate(statement);
     }
 
     @Override
     public boolean isEmpty() {
-        if (memoryAuths.isEmpty()) {
+        /*if (memoryAuths.isEmpty()) {
             return true;
         } else {
             return false;
-        }
+        }*/
+        return false;
     }
 
     public static String generateToken() {
@@ -111,15 +115,13 @@ public class SQLAuthDAO implements AuthDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            CREATE TABLE IF NOT EXISTS auth (
+              `token` varchar(256) NOT NULL,
+              `hashedUsername` varchar(256) NOT NULL,
+              PRIMARY KEY (`token`),
+              INDEX(token),
+              INDEX(hashedUsername)
+            )
             """
     };
 

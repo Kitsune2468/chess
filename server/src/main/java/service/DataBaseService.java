@@ -17,7 +17,6 @@ public class DataBaseService {
         authDAO.clear();
         gameDAO.clear();
         userDAO.clear();
-        return;
     }
 
     public boolean checkEmpty() throws DataAccessException {

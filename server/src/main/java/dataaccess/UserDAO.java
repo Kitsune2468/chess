@@ -2,12 +2,12 @@ package dataaccess;
 import model.UserData;
 
 public interface UserDAO {
-    public void addUser(UserData userData);
+    public void addUser(UserData userData) throws DataAccessException;
 
-    public UserData getUserByUsername(String name);
+    public UserData getUserByUsername(String name) throws DataAccessException;
 
-    public void clear();
+    public void clear() throws DataAccessException;
 
-    public boolean isEmpty();
+    public boolean isEmpty() throws DataAccessException;
 }
 

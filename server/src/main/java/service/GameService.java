@@ -21,7 +21,7 @@ public class GameService {
         authDAO = inputAuthDAO;
     }
 
-    public GameData findGameByGameName(String gameName) {
+    public GameData findGameByGameName(String gameName)  throws DataAccessException {
         return gameDAO.getGameByString(gameName);
     }
 
