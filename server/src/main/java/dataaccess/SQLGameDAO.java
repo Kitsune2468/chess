@@ -1,6 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
+import model.AuthData;
 import model.GameData;
 import service.requests.GameTemplateResult;
 
@@ -11,131 +13,171 @@ import java.util.Objects;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLGameDAO implements GameDAO {
-    private ArrayList<GameData> memoryGames;
-    private int gameCounter;
 
     public SQLGameDAO() throws DataAccessException {
-        memoryGames = new ArrayList<GameData>();
-        gameCounter = 1;
         configureDatabase();
     }
 
     @Override
     public int addGame(String gameName) throws DataAccessException {
-        GameData newGame = new GameData(gameCounter,null, null, gameName, new ChessGame());
-        memoryGames.add(newGame);
-        return gameCounter++;
+        var JSONGame = new Gson().toJson(new ChessGame());
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame) VALUES(?, ?)")) {
+                statement.setString(1, gameName);
+                statement.setString(2, JSONGame);
+                statement.executeUpdate();
+
+                var results = statement.getGeneratedKeys();
+                if (results.next()) {
+                    int gameID = results.getInt("gameID");
+                    return gameID;
+                } else {
+                    throw new DataAccessException("Failed to add game");
+                }
+            }
+        } catch (SQLException | DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     @Override
     public GameData getGameByID(int gameID) throws DataAccessException {
-        GameData foundGame = null;
-        for(GameData searchAuth : memoryGames) {
-            int foundGameID = searchAuth.gameID();
-            if (foundGameID == gameID) {
-                foundGame = searchAuth;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT gameName, whiteUsername, blackusername, chessGame FROM games WHERE gameID=?")) {
+                statement.setInt(1, gameID);
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    String gameName = results.getString("gameName");
+                    String whiteUsername = results.getString("whiteUsername");
+                    String blackUsername = results.getString("blackUsername");
+                    String JSONGame = results.getString("chessGame");
+                    ChessGame chessGame = new Gson().fromJson(JSONGame, ChessGame.class);
+                    return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame);
+                }
             }
+        } catch (SQLException e) {
+            throw new DataAccessException("Game with ID: " + gameID + " could not be found");
         }
-        return foundGame;
     }
 
     @Override
     public GameData getGameByString(String gameName) throws DataAccessException {
-        GameData foundGame = null;
-        for(GameData searchAuth : memoryGames) {
-            String foundGameName = searchAuth.gameName();
-            if (foundGameName.equals(gameName)) {
-                foundGame = searchAuth;
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackusername, chessGame FROM games WHERE gameName=?")) {
+                statement.setString(1, gameName);
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    int gameID = results.getInt("gameID");
+                    String whiteUsername = results.getString("whiteUsername");
+                    String blackUsername = results.getString("blackUsername");
+                    String JSONGame = results.getString("chessGame");
+                    ChessGame chessGame = new Gson().fromJson(JSONGame, ChessGame.class);
+                    return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame);
+                }
             }
+        } catch (SQLException e) {
+            throw new DataAccessException("Game: " + gameName + " could not be found");
         }
-        return foundGame;
     }
 
     @Override
     public void joinGame(int gameID, String joinTeamColor, String playerName) throws DataAccessException {
-        for(GameData searchGame : memoryGames) {
-            int foundGameID = searchGame.gameID();
-            if (foundGameID == gameID) {
-                if (joinTeamColor.equals("BLACK")) {
-                    GameData updatedGame = new GameData(searchGame.gameID(),
-                            searchGame.whiteUsername(),
-                            playerName,
-                            searchGame.gameName(),
-                            searchGame.game());
-                    memoryGames.remove(searchGame);
-                    memoryGames.add(updatedGame);
-                } else if (joinTeamColor.equals("WHITE")) {
-                    GameData updatedGame = new GameData(searchGame.gameID(),
-                            playerName,
-                            searchGame.blackUsername(),
-                            searchGame.gameName(),
-                            searchGame.game());
-                    memoryGames.remove(searchGame);
-                    memoryGames.add(updatedGame);
-                }
+        GameData foundGame = getGameByID(gameID);
+        String blackUsername, whiteUsername;
+
+        switch (joinTeamColor) {
+            case "WHITE":
+                blackUsername = foundGame.blackUsername();
+                whiteUsername = playerName;
+                break;
+            case "BLACK":
+                blackUsername = playerName;
+                whiteUsername = foundGame.whiteUsername();
+                break;
+            case null, default:
+                throw new DataAccessException("Failed to join game");
+        }
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("UPDATE games SET whiteUsername=?, blackUsername=? WHERE gameID=?")) {
+                preparedStatement.setString(1, whiteUsername);
+                preparedStatement.setString(2, blackUsername);
+                preparedStatement.setInt(3,gameID);
+
+                preparedStatement.executeUpdate();
             }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 
     @Override
     public ArrayList<GameTemplateResult> getAllGames() throws DataAccessException {
         ArrayList<GameTemplateResult> games = new ArrayList<GameTemplateResult>();
-        for (GameData game : memoryGames) {
-            GameTemplateResult convertedGame = new GameTemplateResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName());
-            games.add(convertedGame);
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackusername, chessGame FROM games")) {
+                try (var results = preparedStatement.executeQuery()) {
+                    while (results.next()) {
+                        int gameID = results.getInt("gameID");
+                        String gameName = results.getString("gameName");
+                        String whiteUsername = results.getString("whiteUsername");
+                        String blackUsername = results.getString("blackUsername");
+                        String JSONGame = results.getString("chessGame");
+                        ChessGame chessGame = new Gson().fromJson(JSONGame, ChessGame.class);
+                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName);
+                        games.add(convertedGame);
+                    }
+                    return games;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
-        return games;
     }
 
     @Override
     public void clear() throws DataAccessException {
-        memoryGames.clear();
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var statement = conn.prepareStatement("TRUNCATE games")) {
+                statement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Clear games failed");
+        }
     }
 
     @Override
     public boolean isEmpty() throws DataAccessException {
-        if (memoryGames.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    //if (param instanceof String p) ps.setString(i + 1, p);
-                    //else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    //else if (param instanceof PetType p) ps.setString(i + 1, p.toString());
-                    //else if (param == null) ps.setNull(i + 1, NULL);
+            try (var statement = conn.prepareStatement("SELECT count(*) AS authCount FROM auth")) {
+                try (var results = statement.executeQuery()) {
+                    results.next();
+                    int authCount = results.getInt("authCount");
+                    if (authCount == 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException("Failed to check if empty");
         }
     }
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  pet (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            CREATE TABLE IF NOT EXISTS  games (
+              `gameID` int NOT NULL AUTO_INCREMENT,
+              `gameName` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
+              `chessGame` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`),
+              INDEX(gameID),
+              INDEX(gameName)
+              
+            )
             """
     };
 
@@ -151,26 +193,4 @@ public class SQLGameDAO implements GameDAO {
             throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (o == null || getClass() != o.getClass()) { return false; }
-        SQLGameDAO that = (SQLGameDAO) o;
-        return gameCounter == that.gameCounter;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(memoryGames, gameCounter);
-    }
-
-    @Override
-    public String toString() {
-        return "MemoryGameDAO{" +
-                "memoryGames=" + memoryGames +
-                ", gameCounter=" + gameCounter +
-                '}';
-    }
-
 }

@@ -16,9 +16,9 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData addAuth(String hashedUsername) throws DataAccessException {
+    public AuthData addAuth(String username) throws DataAccessException {
         String token = generateToken();
-        AuthData newAuth = new AuthData(token, hashedUsername);
+        AuthData newAuth = new AuthData(token, username);
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("INSERT INTO auth (username, authToken) VALUES(?, ?)")) {
@@ -35,12 +35,12 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public AuthData getAuthByToken(String token) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT hashedUsername, authToken FROM auth WHERE authToken=?")) {
+            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE authToken=?")) {
                 statement.setString(1, token);
                 try (var results = statement.executeQuery()) {
                     results.next();
-                    var userName = results.getString("authToken");
-                    return new AuthData(userName, token);
+                    var username = results.getString("username");
+                    return new AuthData(username, token);
                 }
             }
         } catch (SQLException e) {
@@ -49,14 +49,14 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuthByUsername(String hashedUsername) throws DataAccessException {
+    public AuthData getAuthByUsername(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT hashedUsername, authToken FROM auth WHERE hashedUsername=?")) {
-                statement.setString(1, hashedUsername);
+            try (var statement = conn.prepareStatement("SELECT username, authToken FROM auth WHERE hashedUsername=?")) {
+                statement.setString(1, username);
                 try (var results = statement.executeQuery()) {
                     results.next();
                     var authToken = results.getString("authToken");
-                    return new AuthData(hashedUsername, authToken);
+                    return new AuthData(username, authToken);
                 }
             }
         } catch (SQLException e) {
@@ -67,13 +67,13 @@ public class SQLAuthDAO implements AuthDAO {
     @Override
     public boolean deleteAuthByToken(String token) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("DELETE hashedUsername, authToken FROM auth WHERE authToken=?")) {
+            try (var statement = conn.prepareStatement("DELETE username, authToken FROM auth WHERE authToken=?")) {
                 statement.setString(1, token);
                 statement.executeUpdate();
                 return true;
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Username does not exist");
+            throw new DataAccessException("Token does not exist");
         }
     }
 
@@ -103,7 +103,7 @@ public class SQLAuthDAO implements AuthDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Username does not exist");
+            throw new DataAccessException("Failed to check if auth was empty");
         }
     }
 
@@ -115,10 +115,10 @@ public class SQLAuthDAO implements AuthDAO {
             """
             CREATE TABLE IF NOT EXISTS auth (
               `token` varchar(256) NOT NULL,
-              `hashedUsername` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
               PRIMARY KEY (`token`),
               INDEX(token),
-              INDEX(hashedUsername)
+              INDEX(username)
             )
             """
     };
