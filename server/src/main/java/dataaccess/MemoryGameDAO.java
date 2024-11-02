@@ -17,8 +17,11 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public int addGame(String gameName) {
-        GameData newGame = new GameData(gameCounter,null, null, gameName, new ChessGame());
+    public int addGame(String gameName) throws DataAccessException{
+        if (getGameByString(gameName) != null) {
+            throw new DataAccessException("bad request");
+        }
+        GameData newGame = new GameData(gameCounter,gameName,null, null, new ChessGame());
         memoryGames.add(newGame);
         return gameCounter++;
     }
@@ -43,6 +46,9 @@ public class MemoryGameDAO implements GameDAO {
             if (foundGameName.equals(gameName)) {
                 foundGame = searchAuth;
             }
+            if (foundGame == null) {
+                return null;
+            }
         }
         return foundGame;
     }
@@ -54,17 +60,17 @@ public class MemoryGameDAO implements GameDAO {
             if (foundGameID == gameID) {
                 if (joinTeamColor.equals("BLACK")) {
                     GameData updatedGame = new GameData(searchGame.gameID(),
+                            searchGame.gameName(),
                             searchGame.whiteUsername(),
                             playerName,
-                            searchGame.gameName(),
                             searchGame.game());
                     memoryGames.remove(searchGame);
                     memoryGames.add(updatedGame);
                 } else if (joinTeamColor.equals("WHITE")) {
                     GameData updatedGame = new GameData(searchGame.gameID(),
+                            searchGame.gameName(),
                             playerName,
                             searchGame.blackUsername(),
-                            searchGame.gameName(),
                             searchGame.game());
                     memoryGames.remove(searchGame);
                     memoryGames.add(updatedGame);

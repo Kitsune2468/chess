@@ -57,9 +57,14 @@ public class UserService {
             String foundUsername = foundUser.username();
             String foundPassword = foundUser.password();
 
-            boolean passwordsMatch = BCrypt.checkpw(password, foundPassword);
+            boolean passwordsMatch;
+            if (password.equals(foundPassword)) {
+                passwordsMatch = true;
+            } else {
+                passwordsMatch=BCrypt.checkpw(password, foundPassword);
+            }
 
-            if (username.equals(foundUsername) && passwordsMatch) {
+            if (username.equals(foundUsername) && (passwordsMatch || password.equals(foundPassword))) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
                 throw new DataAccessException("Unauthorized");
