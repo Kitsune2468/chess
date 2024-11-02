@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -28,7 +29,9 @@ public class UserHandler {
         }
 
         try {
-            AuthData newAuth = userService.addUser(userData);
+            String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+            UserData loginData = new UserData(foundUsername,hashedPassword,foundEmail);
+            AuthData newAuth = userService.addUser(loginData);
             result.status(200);
             resultBody = new Gson().toJson(newAuth);
         } catch (DataAccessException e) {
@@ -54,8 +57,10 @@ public class UserHandler {
             throw new DataAccessException("bad request");
         }
 
+        UserData loginData = new UserData(foundUsername, foundPassword, null);
+
         try {
-            AuthData newAuth = userService.login(userData);
+            AuthData newAuth = userService.login(loginData);
             result.status(200);
             resultBody = new Gson().toJson(newAuth);
         } catch (DataAccessException e) {

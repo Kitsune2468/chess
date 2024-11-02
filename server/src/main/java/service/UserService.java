@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -56,7 +57,9 @@ public class UserService {
             String foundUsername = foundUser.username();
             String foundPassword = foundUser.password();
 
-            if (username.equals(foundUsername) && password.equals(foundPassword)) {
+            boolean passwordsMatch = BCrypt.checkpw(password, foundPassword);
+
+            if (username.equals(foundUsername) && passwordsMatch) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
                 throw new DataAccessException("Unauthorized");
