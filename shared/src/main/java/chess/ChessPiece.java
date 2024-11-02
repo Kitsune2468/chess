@@ -353,12 +353,10 @@ public class ChessPiece {
 
         //Check Row
         checkRow = startRow+baseOffset;
-        checkCol = startCol;
         if (checkRow<1||checkRow>8) {
             return possibleMoves;
         } else {
             if (checkRow==promotionRow) {
-                //Promotion Logic straight ahead
                 checkCol = startCol;
                 checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
                 if (checkPiece==null) {
@@ -367,7 +365,6 @@ public class ChessPiece {
                     possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),PieceType.ROOK));
                     possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),PieceType.KNIGHT));
                 }
-                //Promotion Logic to the sides
                 checkCol = startCol-1;
                 if (checkCol>=1&&checkCol<=8) {
                     checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
@@ -393,7 +390,6 @@ public class ChessPiece {
                     }
                 }
             } else {
-                //Base Logic straight ahead
                 checkCol = startCol;
                 checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
                 if (checkPiece==null) {
