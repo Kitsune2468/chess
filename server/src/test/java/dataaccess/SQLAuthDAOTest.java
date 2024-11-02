@@ -1,7 +1,5 @@
-package MySQLJUnitTests;
+package dataaccess;
 
-import chess.ChessGame;
-import dataaccess.*;
 import model.AuthData;
 import org.junit.jupiter.api.*;
 

@@ -1,8 +1,7 @@
-package MySQLJUnitTests;
+package dataaccess;
 
 import chess.*;
 import com.google.gson.Gson;
-import dataaccess.*;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import service.requests.GameTemplateResult;
