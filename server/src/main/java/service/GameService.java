@@ -21,10 +21,6 @@ public class GameService {
         authDAO = inputAuthDAO;
     }
 
-    public GameData findGameByGameName(String gameName)  throws DataAccessException {
-        return gameDAO.getGameByString(gameName);
-    }
-
     public int createGame(String newGameName, String authToken) throws DataAccessException {
         if (authDAO.getAuthByToken(authToken) == null) {
             throw new DataAccessException("unauthorized");

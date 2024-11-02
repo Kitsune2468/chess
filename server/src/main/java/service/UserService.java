@@ -51,7 +51,7 @@ public class UserService {
 
             UserData foundUser = userDAO.getUserByUsername(username);
             if (foundUser == null) {
-                throw new DataAccessException("unauthorized");
+                throw new DataAccessException("Unauthorized");
             }
             String foundUsername = foundUser.username();
             String foundPassword = foundUser.password();
@@ -59,7 +59,7 @@ public class UserService {
             if (username.equals(foundUsername) && password.equals(foundPassword)) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
-                throw new DataAccessException("unauthorized");
+                throw new DataAccessException("Unauthorized");
             }
             return newAuth;
         } catch (DataAccessException e) {
@@ -72,7 +72,7 @@ public class UserService {
             if (authDAO.deleteAuthByToken(authToken)) {
                 return;
             } else {
-                throw new DataAccessException("unauthorized");
+                throw new DataAccessException("Unauthorized");
             }
         } catch (DataAccessException e) {
             throw e;

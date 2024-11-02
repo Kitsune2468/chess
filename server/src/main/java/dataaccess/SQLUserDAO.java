@@ -43,7 +43,7 @@ public class SQLUserDAO implements UserDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Username does not exist");
+            return null;
         }
     }
 
@@ -83,8 +83,8 @@ public class SQLUserDAO implements UserDAO {
               `username` varchar(256) NOT NULL,
               `hashedPassword` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
-              PRIMARY KEY (`name`),
-              INDEX(name)
+              PRIMARY KEY (`username`),
+              INDEX(username)
             )
             """
     };

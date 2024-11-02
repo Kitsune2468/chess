@@ -24,17 +24,21 @@ public class Server {
     UserHandler userHandler;
 
     public Server() {
-        userDAO = new MemoryUserDAO();
-        authDAO = new MemoryAuthDAO();
-        gameDAO = new MemoryGameDAO();
+        try {
+            userDAO = new SQLUserDAO();
+            authDAO = new SQLAuthDAO();
+            gameDAO = new SQLGameDAO();
 
-        dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO);
-        gameService = new GameService(gameDAO,authDAO);
-        userService = new UserService(userDAO,authDAO);
+            dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO);
+            gameService = new GameService(gameDAO, authDAO);
+            userService = new UserService(userDAO, authDAO);
 
-        dataBaseHandler = new DataBaseHandler(dataBaseService);
-        gameHandler = new GameHandler(gameService);
-        userHandler = new UserHandler(userService);
+            dataBaseHandler = new DataBaseHandler(dataBaseService);
+            gameHandler = new GameHandler(gameService);
+            userHandler = new UserHandler(userService);
+        } catch (DataAccessException e) {
+            System.out.println("Failed to initialize Server class" + e.getMessage());
+        }
     }
 
     public int run(int desiredPort) {

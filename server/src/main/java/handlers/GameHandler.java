@@ -24,10 +24,10 @@ public class GameHandler {
         try {
             String gameName = newGameRequest.gameName();
             int gameID = gameService.createGame(gameName, authToken);
-            GameData returnID = new GameData(gameID, null, null, null, null);
+            GameData returnID = new GameData(gameID, gameName, null, null, null);
             resultBody = new Gson().toJson(returnID);
         } catch (DataAccessException e) {
-            if (e.getMessage().toString().equals("unauthorized")) {
+            if (e.getMessage().toString().equals("Unauthorized")) {
                 result.status(401);
             } else if (e.getMessage().toString().equals("bad request")) {
                 result.status(400);
@@ -51,7 +51,7 @@ public class GameHandler {
         } catch (DataAccessException e) {
             if (e.getMessage().toString().equals("bad request")) {
                 result.status(400);
-            } else if (e.getMessage().toString().equals("unauthorized")) {
+            } else if (e.getMessage().toString().equals("Unauthorized")) {
                 result.status(401);
             } else {
                 result.status(500);
@@ -73,7 +73,7 @@ public class GameHandler {
         } catch (DataAccessException e) {
             if (e.getMessage().toString().equals("bad request")) {
                 result.status(400);
-            } else if (e.getMessage().toString().equals("unauthorized")) {
+            } else if (e.getMessage().toString().equals("Unauthorized")) {
                 result.status(401);
             } else if (e.getMessage().toString().equals("already taken")) {
                 result.status(403);

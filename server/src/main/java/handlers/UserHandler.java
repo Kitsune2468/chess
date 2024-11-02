@@ -59,7 +59,7 @@ public class UserHandler {
             result.status(200);
             resultBody = new Gson().toJson(newAuth);
         } catch (DataAccessException e) {
-            if (e.getMessage().toString().equals("unauthorized")) {
+            if (e.getMessage().toString().equals("Unauthorized")) {
                 result.status(401);
             } else {
                 result.status(500);
@@ -79,7 +79,7 @@ public class UserHandler {
             result.status(200);
             resultBody = "{}";
         } catch (DataAccessException e) {
-            if (e.getMessage().toString().equals("unauthorized")) {
+            if (e.getMessage().toString().equals("Unauthorized")) {
                 result.status(401);
                 resultBody = "{ \"message\": \"Error: "+e.getMessage()+"\" }";
                 return resultBody;

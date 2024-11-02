@@ -40,11 +40,11 @@ public class SQLAuthDAO implements AuthDAO {
                 try (var results = statement.executeQuery()) {
                     results.next();
                     var username = results.getString("username");
-                    return new AuthData(username, token);
+                    return new AuthData(token, username);
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Auth token does not exist");
+            throw new DataAccessException("Unauthorized");
         }
     }
 
@@ -56,20 +56,23 @@ public class SQLAuthDAO implements AuthDAO {
                 try (var results = statement.executeQuery()) {
                     results.next();
                     var authToken = results.getString("authToken");
-                    return new AuthData(username, authToken);
+                    return new AuthData(authToken, username);
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Username does not exist");
+            throw new DataAccessException("Unauthorized");
         }
     }
 
     @Override
     public boolean deleteAuthByToken(String token) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("DELETE username, authToken FROM auth WHERE authToken=?")) {
+            try (var statement = conn.prepareStatement("DELETE FROM auth WHERE authToken=?")) {
                 statement.setString(1, token);
-                statement.executeUpdate();
+                int rowsDeleted = statement.executeUpdate();
+                if (rowsDeleted == 0) {
+                    throw new DataAccessException("Unauthorized");
+                }
                 return true;
             }
         } catch (SQLException e) {
@@ -114,10 +117,10 @@ public class SQLAuthDAO implements AuthDAO {
     private final String[] createStatements = {
             """
             CREATE TABLE IF NOT EXISTS auth (
-              `token` varchar(256) NOT NULL,
+              `authToken` varchar(256) NOT NULL,
               `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`token`),
-              INDEX(token),
+              PRIMARY KEY (`authToken`),
+              INDEX(authToken),
               INDEX(username)
             )
             """

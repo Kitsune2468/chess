@@ -23,14 +23,14 @@ public class SQLGameDAO implements GameDAO {
         var JSONGame = new Gson().toJson(new ChessGame());
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame) VALUES(?, ?)")) {
+            try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
                 statement.setString(1, gameName);
                 statement.setString(2, JSONGame);
                 statement.executeUpdate();
 
                 var results = statement.getGeneratedKeys();
                 if (results.next()) {
-                    int gameID = results.getInt("gameID");
+                    int gameID = results.getInt(1);
                     return gameID;
                 } else {
                     throw new DataAccessException("Failed to add game");
@@ -57,7 +57,8 @@ public class SQLGameDAO implements GameDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Game with ID: " + gameID + " could not be found");
+            return null;
+            //throw new DataAccessException("Game with ID: " + gameID + " could not be found");
         }
     }
 
@@ -77,7 +78,8 @@ public class SQLGameDAO implements GameDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Game: " + gameName + " could not be found");
+            return null;
+            //throw new DataAccessException("Game: " + gameName + " could not be found");
         }
     }
 
