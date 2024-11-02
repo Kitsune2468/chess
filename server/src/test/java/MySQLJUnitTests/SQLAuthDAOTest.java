@@ -4,12 +4,8 @@ import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import passoff.model.*;
-import server.Server;
 
-import java.lang.reflect.Method;
 import java.sql.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SQLAuthDAOTest {
 

@@ -21,6 +21,9 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public int addGame(String gameName) throws DataAccessException {
         var JSONGame = new Gson().toJson(new ChessGame());
+        if (getGameByString(gameName) != null) {
+            throw new DataAccessException("bad request");
+        }
 
         try (var conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
