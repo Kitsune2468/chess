@@ -64,7 +64,7 @@ public class UserService {
                 passwordsMatch=BCrypt.checkpw(password, foundPassword);
             }
 
-            if (username.equals(foundUsername) && (passwordsMatch || password.equals(foundPassword))) {
+            if (username.equals(foundUsername) && (passwordsMatch)) {
                 newAuth = authDAO.addAuth(foundUser.username());
             } else {
                 throw new DataAccessException("Unauthorized");

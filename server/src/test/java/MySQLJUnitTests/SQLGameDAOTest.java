@@ -9,7 +9,6 @@ import service.requests.GameTemplateResult;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class SQLGameDAOTest {
 
