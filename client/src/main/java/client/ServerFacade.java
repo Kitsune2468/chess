@@ -16,4 +16,6 @@ public class ServerFacade {
 
     }
 
+    public void register(String username, String password, String email) throws DataAccessException {
+    }
 }

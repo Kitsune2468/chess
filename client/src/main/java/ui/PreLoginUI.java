@@ -24,12 +24,19 @@ public class PreLoginUI {
                 case "login":
                     login();
                     break;
+
+                case "register":
+                    register();
+                    break;
+
                 case "help":
                     help();
                     break;
+
                 case "quit":
                     quit();
                     System.exit(0);
+
                 case null, default:
                     System.out.println("Invalid command, please try again. (Type help to display available commands.)\n");
                     break;
@@ -39,15 +46,37 @@ public class PreLoginUI {
 
     public void login() {
         String username, password;
-        System.out.println("\nEnter your username: \n");
+        System.out.println("Login:");
+        System.out.print("Enter your username:\n   ");
         String line = scanner.nextLine();
         username = line.strip();
-        System.out.println("\nEnter your password: \n");
+        System.out.print("Enter your password:\n   ");
         line = scanner.nextLine();
         password = line.strip();
 
         try {
             server.login(username,password);
+        } catch (DataAccessException e) {
+            System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
+        }
+    }
+
+    public void register() {
+        String username, password, email;
+
+        System.out.println("Register:");
+        System.out.print("Enter your username:\n   ");
+        String line = scanner.nextLine();
+        username = line.strip();
+        System.out.print("Enter your password:\n   ");
+        line = scanner.nextLine();
+        password = line.strip();
+        System.out.print("Enter your email:\n   ");
+        line = scanner.nextLine();
+        email = line.strip();
+
+        try {
+            server.register(username,password,email);
         } catch (DataAccessException e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
