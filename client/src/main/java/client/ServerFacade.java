@@ -1,14 +1,19 @@
 package client;
 
+import dataaccess.DataAccessException;
+
 import java.net.*;
 
 public class ServerFacade {
     String authToken;
     String serverUrl;
 
-    public ServerFacade(int port) throws Exception {
+    public ServerFacade(int port) {
         serverUrl = "http://localhost:"+port;
     }
 
+    public void login(String username, String password) throws DataAccessException {
+
+    }
 
 }
