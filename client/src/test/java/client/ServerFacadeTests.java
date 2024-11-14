@@ -84,6 +84,25 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void logoutTest() {
+        try {
+            facade.register("username", "password", "email");
+            facade.logout();
+            Assertions.assertTrue(true);
+        } catch (DataAccessException e) {
+            Assertions.fail();
+        }
+    }
 
+    @Test
+    public void logoutTestFail() {
+        try {
+            facade.logout();
+            Assertions.fail();
+        } catch (DataAccessException e) {
+            Assertions.assertTrue(true);
+        }
+    }
 
 }
