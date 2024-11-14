@@ -60,6 +60,30 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void loginTest() {
+        try {
+            facade.register("username", "password", "email");
+            facade.logout();
+            facade.login("username","password");
+            Assertions.assertTrue(true);
+        } catch (DataAccessException e) {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    public void loginTestFail() {
+        try {
+            facade.register("username", "password", "email");
+            facade.logout();
+            facade.login("username","wrongPassword");
+            Assertions.fail();
+        } catch (DataAccessException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
 
 
 }
