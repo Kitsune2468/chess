@@ -77,6 +77,10 @@ public class ServerFacade {
         }
     }
 
+    protected void clearServer() throws DataAccessException {
+        request("DELETE", "/db", null);
+    }
+
     private Map request(String method, String endpoint, String jsonBody) {
         Map respMap;
         try {

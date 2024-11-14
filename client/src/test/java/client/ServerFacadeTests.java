@@ -1,7 +1,10 @@
 package client;
 
+import dataaccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import server.Server;
+
+import java.util.Map;
 
 
 public class ServerFacadeTests {
@@ -21,6 +24,15 @@ public class ServerFacadeTests {
         }
     }
 
+    @BeforeEach
+    void clearServer() {
+        try {
+            facade.clearServer();
+        } catch (Exception e) {
+            System.out.println("Failed to connect to server: "+e.getMessage());
+        }
+    }
+
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -28,8 +40,26 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void sampleTest() {
-        Assertions.assertTrue(true);
+    public void registerTest() {
+        try {
+            facade.register("username", "password", "email");
+            Assertions.assertTrue(true);
+        } catch (DataAccessException e) {
+            Assertions.fail();
+        }
     }
+
+    @Test
+    public void registerTestFail() {
+        try {
+            facade.register("username", "password", "email");
+            facade.register("username", "password", "email");
+            Assertions.fail();
+        } catch (DataAccessException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
+
 
 }
