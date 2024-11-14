@@ -59,14 +59,22 @@ public class ServerFacade {
         return games;
     }
 
-    public boolean createGame(String gameName) throws DataAccessException {
+    public void createGame(String gameName) throws DataAccessException {
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/game", jsonBody);
         if (resp.containsKey("Error")) {
             throw new DataAccessException("Failed to create game: "+resp.get("Error").toString());
         }
-        return true;
+    }
+
+    public void joinGame(int gameID, String teamToJoin) throws DataAccessException {
+        var body = Map.of("gameID", gameID,"playerColor",teamToJoin);
+        var jsonBody = new Gson().toJson(body);
+        Map resp = request("PUT", "/game", jsonBody);
+        if (resp.containsKey("Error")) {
+            throw new DataAccessException("Failed to join game: "+resp.get("Error").toString());
+        }
     }
 
     private Map request(String method, String endpoint, String jsonBody) {
