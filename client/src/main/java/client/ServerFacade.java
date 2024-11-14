@@ -48,13 +48,17 @@ public class ServerFacade {
         authToken = (String)resp.get("authToken");
     }
 
-    public GameListResult listGames() {
+    public GameListResult listGames() throws DataAccessException {
         Map resp = request("GET", "/game",null);
         if (resp.containsKey("Error")) {
             return null;
         }
         String stringResp = new Gson().toJson(resp);
         GameListResult games = new Gson().fromJson(stringResp, GameListResult.class);
+
+        if (games.games().isEmpty()) {
+            throw new DataAccessException("No games found");
+        }
 
         return games;
     }
@@ -121,18 +125,6 @@ public class ServerFacade {
         }
 
         return respMap;
-    }
-
-    private String readerToString(InputStreamReader reader) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            for (int ch; (ch = reader.read()) != -1; ) {
-                sb.append((char) ch);
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            return "";
-        }
     }
 
 }
