@@ -34,7 +34,7 @@ public class ServerFacade {
     public void logout() throws DataAccessException {
         Map resp = request("DELETE", "/session", null);
         if (resp.containsKey("Error")) {
-            throw new DataAccessException("Failed to logout");
+            throw new DataAccessException("Failed to logout"+resp.get("Error").toString());
         }
     }
 
@@ -49,14 +49,24 @@ public class ServerFacade {
     }
 
     public GameListResult listGames() {
-//        Map resp = request("GET", "/game",null);
-//        if (resp.containsKey("Error")) {
-//            return null;
-//        }
-//        GameListResult games = new Gson().fromJson(resp, GameListResult.class);
-//
-//        return games;
-        return null;
+        Map resp = request("GET", "/game",null);
+        if (resp.containsKey("Error")) {
+            return null;
+        }
+        String stringResp = new Gson().toJson(resp);
+        GameListResult games = new Gson().fromJson(stringResp, GameListResult.class);
+
+        return games;
+    }
+
+    public boolean createGame(String gameName) throws DataAccessException {
+        var body = Map.of("gameName", gameName);
+        var jsonBody = new Gson().toJson(body);
+        Map resp = request("POST", "/game", jsonBody);
+        if (resp.containsKey("Error")) {
+            throw new DataAccessException("Failed to create game: "+resp.get("Error").toString());
+        }
+        return true;
     }
 
     private Map request(String method, String endpoint, String jsonBody) {

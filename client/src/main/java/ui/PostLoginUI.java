@@ -2,6 +2,7 @@ package ui;
 
 import client.ServerFacade;
 import dataaccess.DataAccessException;
+import service.requests.GameListResult;
 import service.requests.GameTemplateResult;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class PostLoginUI {
                     break;
 
                 case "create":
-                    create();
+                    createGame();
                     break;
 
                 case "help":
@@ -60,8 +61,8 @@ public class PostLoginUI {
 
     public void list() {
         try {
-            //ArrayList<GameTemplateResult> currentGames = server.listGames();
-
+            GameListResult currentGames = server.listGames();
+            System.out.println(currentGames.toString());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -84,12 +85,17 @@ public class PostLoginUI {
         }
     }
 
-    public void create() {
+    public void createGame() {
         try {
-            //ArrayList<GameTemplateResult> currentGames = server.listGames();
-
+            String gameName;
+            System.out.println("Creating game:");
+            System.out.print("Enter the name of the game you want to create:\n   ");
+            String line = scanner.nextLine();
+            gameName = line.strip();
+            server.createGame(gameName);
+            System.out.println("Created new game: "+gameName);
         } catch (Exception e) {
-            System.out.println("IDK, error or something lol");
+            System.out.println("Error in createGame: "+e.getMessage());
         }
     }
 
@@ -99,7 +105,7 @@ public class PostLoginUI {
             System.out.println("\nLogging out...");
             loggedIn = false;
         } catch (Exception e) {
-            System.out.println("IDK, error or something lol");
+            System.out.println("Failed to logout: "+e.getMessage());
         }
     }
 
