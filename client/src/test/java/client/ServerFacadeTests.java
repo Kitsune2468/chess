@@ -105,4 +105,27 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void createGameTest() {
+        try {
+            facade.register("username", "password", "email");
+            facade.createGame("testGame");
+            Assertions.assertTrue(true);
+        } catch (DataAccessException e) {
+            Assertions.fail();
+        }
+    }
+
+    @Test
+    public void createGameTestFail() {
+        try {
+            facade.register("username", "password", "email");
+            facade.createGame("testGame");
+            facade.createGame("testGame");
+            Assertions.fail();
+        } catch (DataAccessException e) {
+            Assertions.assertTrue(true);
+        }
+    }
+
 }
