@@ -39,7 +39,8 @@ public class SQLGameDAOTest {
         GameData resultGameData;
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM games WHERE gameID=?")) {
+            String gameInfo = "gameID, whiteUsername, blackUsername, gameName, chessGame";
+            try (var statement = conn.prepareStatement("SELECT "+gameInfo+" FROM games WHERE gameID=?")) {
                 statement.setInt(1, testGameData.gameID());
                 try (var results = statement.executeQuery()) {
                     results.next();
