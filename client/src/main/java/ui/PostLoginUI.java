@@ -111,6 +111,7 @@ public class PostLoginUI {
             }
 
             server.joinGame(gameID,teamToJoin);
+            printBoard(new ChessGame().getBoard());
         } catch (Exception e) {
             System.out.println("Failed to join game.");
         }
@@ -128,8 +129,8 @@ public class PostLoginUI {
                 gameNumber = Integer.parseInt(line.strip());
                 gameID = listOfGames.get(gameNumber).gameID();
                 printBoard(new ChessGame().getBoard());
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid game number");
+            } catch (Exception e) {
+                System.out.println("Invalid game number\n");
             }
         } catch (Exception e) {
             System.out.println("Failed to observe game");
@@ -161,14 +162,15 @@ public class PostLoginUI {
         }
     }
 
+    private static final String SET_MENU_OPTION = SET_TEXT_COLOR_GREEN;
     public void help() {
         System.out.println("\nHere are your available commands: ");
-        System.out.println("list - Lists all current chess games");
-        System.out.println("play - Join a chess game");
-        System.out.println("observe - Observe a current chess game");
-        System.out.println("create - Create a new chess game");
-        System.out.println("help - Displays the available commands");
-        System.out.println("logout - Logs out and returns to login menu\n");
+        System.out.println(SET_MENU_OPTION+"list"+RESET_TEXT_COLOR+" - Lists all current chess games");
+        System.out.println(SET_MENU_OPTION+"play"+RESET_TEXT_COLOR+" - Join a chess game");
+        System.out.println(SET_MENU_OPTION+"observe"+RESET_TEXT_COLOR+" - Observe a current chess game");
+        System.out.println(SET_MENU_OPTION+"create"+RESET_TEXT_COLOR+" - Create a new chess game");
+        System.out.println(SET_MENU_OPTION+"help"+RESET_TEXT_COLOR+" - Displays the available commands");
+        System.out.println(SET_MENU_OPTION+"logout"+RESET_TEXT_COLOR+" - Logs out and returns to login menu\n");
     }
 
     private void printGame(GameTemplateResult game) {

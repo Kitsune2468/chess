@@ -1,7 +1,7 @@
 package ui;
 
 import client.ServerFacade;
-
+import static ui.EscapeSequences.*;
 import java.util.Scanner;
 
 public class PreLoginUI {
@@ -89,12 +89,13 @@ public class PreLoginUI {
         }
     }
 
+    private static final String SET_MENU_OPTION = SET_TEXT_COLOR_GREEN;
     public void help() {
         System.out.println("\nHere are your available commands: ");
-        System.out.println("login - log in to play chess");
-        System.out.println("register - Registers a new user");
-        System.out.println("help - Displays the available commands");
-        System.out.println("quit - Quits the program\n");
+        System.out.println(SET_MENU_OPTION+"login"+RESET_TEXT_COLOR+" - log in to play chess");
+        System.out.println(SET_MENU_OPTION+"register"+RESET_TEXT_COLOR+" - Registers a new user");
+        System.out.println(SET_MENU_OPTION+"help"+RESET_TEXT_COLOR+" - Displays the available commands");
+        System.out.println(SET_MENU_OPTION+"quit"+RESET_TEXT_COLOR+" - Quits the program\n");
     }
 
     public void quit() {
