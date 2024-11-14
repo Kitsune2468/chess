@@ -17,7 +17,8 @@ public class PostLoginUI {
 
     public void run() {
         boolean loggedIn = false;
-        String username = "[Not Logged In]";
+        String username = "[Logged In]";
+        System.out.print("\nLogged in!");
         help();
         while(!loggedIn) {
             System.out.print(username+" >>> ");
@@ -45,7 +46,6 @@ public class PostLoginUI {
 
                 case "logout":
                     logout();
-                    System.exit(0);
 
                 case null, default:
                     System.out.println("Invalid command, please try again. (Type help to display available commands.)\n");
@@ -56,7 +56,7 @@ public class PostLoginUI {
 
     public void list() {
         try {
-            ArrayList<GameTemplateResult> currentGames = server.listGames();
+            //ArrayList<GameTemplateResult> currentGames = server.listGames();
 
         } catch (Exception e) {
             System.out.println("IDK, error or something lol");
@@ -65,8 +65,7 @@ public class PostLoginUI {
 
     public void play() {
         try {
-            ArrayList<GameTemplateResult> currentGames = server.listGames();
-
+            //server.joinGame();
         } catch (Exception e) {
             System.out.println("IDK, error or something lol");
         }
@@ -74,7 +73,7 @@ public class PostLoginUI {
 
     public void observe() {
         try {
-            ArrayList<GameTemplateResult> currentGames = server.listGames();
+            //ArrayList<GameTemplateResult> currentGames = server.listGames();
 
         } catch (Exception e) {
             System.out.println("IDK, error or something lol");
@@ -83,7 +82,7 @@ public class PostLoginUI {
 
     public void create() {
         try {
-            ArrayList<GameTemplateResult> currentGames = server.listGames();
+            //ArrayList<GameTemplateResult> currentGames = server.listGames();
 
         } catch (Exception e) {
             System.out.println("IDK, error or something lol");
@@ -92,7 +91,7 @@ public class PostLoginUI {
 
     public void logout() {
         try {
-
+            server.logout();
         } catch (Exception e) {
             System.out.println("IDK, error or something lol");
         }

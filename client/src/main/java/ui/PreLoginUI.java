@@ -8,13 +8,15 @@ import java.util.Scanner;
 public class PreLoginUI {
     ServerFacade server;
     Scanner scanner = new Scanner(System.in);
+    PostLoginUI postLoginUI = new PostLoginUI(server);
+    boolean loggedIn = false;
 
     public PreLoginUI(ServerFacade serverFacade) {
         server = serverFacade;
     }
 
     public void run() {
-        boolean loggedIn = false;
+        loggedIn = false;
         String username = "[Not Logged In]";
         help();
         while(!loggedIn) {
@@ -42,6 +44,8 @@ public class PreLoginUI {
                     break;
             }
         }
+
+        postLoginUI.run();
     }
 
     public void login() {
@@ -56,6 +60,7 @@ public class PreLoginUI {
 
         try {
             server.login(username,password);
+            loggedIn = true;
         } catch (DataAccessException e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
@@ -77,6 +82,7 @@ public class PreLoginUI {
 
         try {
             server.register(username,password,email);
+            loggedIn = true;
         } catch (DataAccessException e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
