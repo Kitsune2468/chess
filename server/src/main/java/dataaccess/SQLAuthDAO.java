@@ -3,16 +3,12 @@ package dataaccess;
 import model.AuthData;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.UUID;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SQLAuthDAO implements AuthDAO {
 
     public SQLAuthDAO() throws DataAccessException {
-        configureDatabase();
+        configureAuthDatabase();
     }
 
     @Override
@@ -92,7 +88,7 @@ public class SQLAuthDAO implements AuthDAO {
     }
 
     @Override
-    public boolean isEmpty() throws DataAccessException {
+    public boolean isAuthEmpty() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("SELECT count(*) AS authCount FROM auth")) {
                 try (var results = statement.executeQuery()) {
@@ -114,7 +110,7 @@ public class SQLAuthDAO implements AuthDAO {
         return UUID.randomUUID().toString();
     }
 
-    private final String[] createStatements = {
+    private final String[] createAuthStatements = {
             """
             CREATE TABLE IF NOT EXISTS auth (
               `authToken` varchar(256) NOT NULL,
@@ -126,16 +122,16 @@ public class SQLAuthDAO implements AuthDAO {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureAuthDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
+            for (var statement : createAuthStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure authdatabase: %s", e.getMessage()));
         }
     }
 }

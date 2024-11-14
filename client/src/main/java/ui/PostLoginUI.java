@@ -184,7 +184,7 @@ public class PostLoginUI {
         System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
     }
 
-    private static String SET_EDGE_COLOR = SET_BG_COLOR_DARK_RED;
+    private static final String SET_EDGE_COLOR = SET_BG_COLOR_DARK_RED;
     private void printBoard(ChessBoard board) {
         printWhiteBoard(board);
         printBlackBoard(board);

@@ -1,20 +1,13 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Objects;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLUserDAO implements UserDAO {
 
     public SQLUserDAO() throws DataAccessException {
-        configureDatabase();
+        configureUserDatabase();
     }
 
     @Override
@@ -60,7 +53,7 @@ public class SQLUserDAO implements UserDAO {
     }
 
     @Override
-    public boolean isEmpty() throws DataAccessException {
+    public boolean isUsersEmpty() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("SELECT count(*) AS usersCount FROM users")) {
                 try (var results = statement.executeQuery()) {
@@ -78,7 +71,7 @@ public class SQLUserDAO implements UserDAO {
         }
     }
 
-    private final String[] createStatements = {
+    private final String[] createUserStatements = {
             """
             CREATE TABLE IF NOT EXISTS users (
               `username` varchar(256) NOT NULL,
@@ -90,16 +83,16 @@ public class SQLUserDAO implements UserDAO {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureUserDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
+            for (var statement : createUserStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure userdatabase: %s", e.getMessage()));
         }
     }
 

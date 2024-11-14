@@ -17,5 +17,5 @@ public interface GameDAO {
 
     public void clear() throws DataAccessException;
 
-    public boolean isEmpty() throws DataAccessException;
+    public boolean isGameEmpty() throws DataAccessException;
 }

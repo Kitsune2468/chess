@@ -10,7 +10,7 @@ public interface AuthDAO {
 
     public void clear() throws DataAccessException;
 
-    public boolean isEmpty() throws DataAccessException;
+    public boolean isAuthEmpty() throws DataAccessException;
 
     public AuthData getAuthByUsername(String username) throws DataAccessException;
 }

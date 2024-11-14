@@ -8,6 +8,6 @@ public interface UserDAO {
 
     public void clear() throws DataAccessException;
 
-    public boolean isEmpty() throws DataAccessException;
+    public boolean isUsersEmpty() throws DataAccessException;
 }
 

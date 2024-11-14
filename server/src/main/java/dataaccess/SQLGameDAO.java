@@ -13,12 +13,12 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public class SQLGameDAO implements GameDAO {
 
     public SQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        configureGameDatabase();
     }
 
     @Override
     public int addGame(String gameName) throws DataAccessException {
-        var JSONGame = new Gson().toJson(new ChessGame());
+        var jsonGame = new Gson().toJson(new ChessGame());
         if (getGameByString(gameName) != null) {
             throw new DataAccessException("bad request");
         }
@@ -26,7 +26,7 @@ public class SQLGameDAO implements GameDAO {
         try (var conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
                 statement.setString(1, gameName);
-                statement.setString(2, JSONGame);
+                statement.setString(2, jsonGame);
                 statement.executeUpdate();
 
                 var results = statement.getGeneratedKeys();
@@ -150,13 +150,13 @@ public class SQLGameDAO implements GameDAO {
     }
 
     @Override
-    public boolean isEmpty() throws DataAccessException {
+    public boolean isGameEmpty() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var statement = conn.prepareStatement("SELECT count(*) AS authCount FROM auth")) {
                 try (var results = statement.executeQuery()) {
                     results.next();
-                    int authCount = results.getInt("authCount");
-                    if (authCount == 0) {
+                    int gameCount = results.getInt("gameCount");
+                    if (gameCount == 0) {
                         return true;
                     } else {
                         return false;
@@ -168,7 +168,7 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-    private final String[] createStatements = {
+    private final String[] createGameStatements = {
             """
             CREATE TABLE IF NOT EXISTS games (
               `gameID` int NOT NULL AUTO_INCREMENT,
@@ -184,16 +184,16 @@ public class SQLGameDAO implements GameDAO {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureGameDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
+            for (var statement : createGameStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure gamedatabase: %s", e.getMessage()));
         }
     }
 }

@@ -66,7 +66,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean isAuthEmpty() {
         if (memoryAuths.isEmpty()) {
             return true;
         } else {

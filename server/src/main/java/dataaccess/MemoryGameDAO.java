@@ -95,7 +95,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public boolean isEmpty() {
+    public boolean isGameEmpty() {
         if (memoryGames.isEmpty()) {
             return true;
         } else {

@@ -20,9 +20,9 @@ public class DataBaseService {
     }
 
     public boolean checkEmpty() throws DataAccessException {
-        if (authDAO.isEmpty() &&
-                gameDAO.isEmpty() &&
-                userDAO.isEmpty()){
+        if (authDAO.isAuthEmpty() &&
+                gameDAO.isGameEmpty() &&
+                userDAO.isUsersEmpty()){
             return true;
         } else {
             return false;
