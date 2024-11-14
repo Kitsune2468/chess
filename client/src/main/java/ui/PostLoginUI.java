@@ -62,7 +62,12 @@ public class PostLoginUI {
     public void list() {
         try {
             GameListResult currentGames = server.listGames();
-            System.out.println(currentGames.toString());
+            System.out.println("Current games: ");
+            int gameCounter = 1;
+            for (var game:currentGames.games()) {
+                System.out.print(gameCounter+": ");
+                printGame(game);
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -117,6 +122,19 @@ public class PostLoginUI {
         System.out.println("create - Create a new chess game");
         System.out.println("help - Displays the available commands");
         System.out.println("logout - Logs out and returns to login menu\n");
+    }
+
+    private void printGame(GameTemplateResult game) {
+        String gameName = game.gameName();
+        String blackUser = game.blackUsername();
+        if (blackUser == null) {
+            blackUser = "None";
+        }
+        String whiteUser = game.whiteUsername();
+        if (whiteUser == null) {
+            whiteUser = "None";
+        }
+        System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
     }
 
 }
