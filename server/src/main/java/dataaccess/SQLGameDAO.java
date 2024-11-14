@@ -52,8 +52,8 @@ public class SQLGameDAO implements GameDAO {
                     String gameName = results.getString("gameName");
                     String whiteUsername = results.getString("whiteUsername");
                     String blackUsername = results.getString("blackUsername");
-                    String JSONGame = results.getString("chessGame");
-                    ChessGame chessGame = new Gson().fromJson(JSONGame, ChessGame.class);
+                    String jsonGame = results.getString("chessGame");
+                    ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
                     return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame);
                 }
             }
@@ -73,8 +73,8 @@ public class SQLGameDAO implements GameDAO {
                     int gameID = results.getInt("gameID");
                     String whiteUsername = results.getString("whiteUsername");
                     String blackUsername = results.getString("blackUsername");
-                    String JSONGame = results.getString("chessGame");
-                    ChessGame chessGame = new Gson().fromJson(JSONGame, ChessGame.class);
+                    String jsonGame = results.getString("chessGame");
+                    ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
                     return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame);
                 }
             }
@@ -125,8 +125,8 @@ public class SQLGameDAO implements GameDAO {
                         String gameName = results.getString("gameName");
                         String whiteUsername = results.getString("whiteUsername");
                         String blackUsername = results.getString("blackUsername");
-                        String JSONGame = results.getString("chessGame");
-                        ChessGame chessGame = new Gson().fromJson(JSONGame, ChessGame.class);
+                        String jsonGame = results.getString("chessGame");
+                        ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
                         GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName);
                         games.add(convertedGame);
                     }

@@ -193,9 +193,9 @@ public class PostLoginUI {
         printEdgeRow("black");
         for (int row = 1; row <= 8; row++) {
             if (row % 2 == 1) {
-                printWhiteRow(board,row,1);
+                printRow(board,row,"white");
             } else {
-                printBlackRow(board,row,1);
+                printRow(board,row,"black");
             }
         }
         printEdgeRow("black");
@@ -204,39 +204,35 @@ public class PostLoginUI {
         printEdgeRow("white");
         for (int row = 8; row >= 1; row--) {
             if (row % 2 == 0) {
-                printWhiteRow(board,row,1);
+                printRow(board,row,"white");
             } else {
-                printBlackRow(board,row,1);
+                printRow(board,row,"black");
             }
         }
         printEdgeRow("white");
     }
-    private void printWhiteRow(ChessBoard board, int rowNumber, int rowOrientation) {
+    private void printRow(ChessBoard board, int rowNumber, String colorRow) {
         printEdgeSpace(Integer.toString(rowNumber));
         for (int column = 1; column <= 8; column ++) {
             if (column % 2 == 1) {
-                System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                if (colorRow == "black") {
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                } else {
+                    System.out.print(SET_BG_COLOR_DARK_GREY);
+                }
             } else {
-                System.out.print(SET_BG_COLOR_DARK_GREY);
+                if (colorRow == "white") {
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                } else {
+                    System.out.print(SET_BG_COLOR_DARK_GREY);
+                }
             }
             printSpace(board.getPiece(new ChessPosition(rowNumber,column)));
         }
         printEdgeSpace(Integer.toString(rowNumber));
         System.out.println("");
     }
-    private void printBlackRow(ChessBoard board, int rowNumber, int rowOrientation) {
-        printEdgeSpace(Integer.toString(rowNumber));
-        for (int column = 1; column <= 8; column ++) {
-            if (column % 2 == 1) {
-                System.out.print(SET_BG_COLOR_DARK_GREY);
-            } else {
-                System.out.print(SET_BG_COLOR_LIGHT_GREY);
-            }
-            printSpace(board.getPiece(new ChessPosition(rowNumber,column)));
-        }
-        printEdgeSpace(Integer.toString(rowNumber));
-        System.out.println("");
-    }
+
     private void printEdgeRow(String boardColor) {
         switch(boardColor) {
             case "black":

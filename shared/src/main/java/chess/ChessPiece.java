@@ -333,9 +333,11 @@ public class ChessPiece {
     public ArrayList<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
         int startRow = myPosition.getRow();
         int startCol = myPosition.getColumn();
-        int checkRow = startRow;
-        int checkCol = startCol;
-        ArrayList<ChessMove> possibleMoves = new ArrayList<ChessMove>();
+        int checkRow;
+        int checkCol;
+        boolean onStartRow = false;
+        boolean blocked = false;
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
         int baseOffset = 0;
         int promotionRow = 0;
         ChessPiece startPiece = board.getPiece(new ChessPosition(startRow, startCol));
@@ -345,85 +347,77 @@ public class ChessPiece {
             //If black pawn, front is down
             baseOffset = -1;
             promotionRow = 1;
+            if (startRow == 7) {
+                onStartRow = true;
+            }
         } else {
             //Else, is white pawn and front is up
             baseOffset = 1;
             promotionRow = 8;
+            if (startRow == 2) {
+                onStartRow = true;
+            }
         }
 
-        //Check Row
+        //Forward 1
         checkRow = startRow+baseOffset;
         if (checkRow<1||checkRow>8) {
             return possibleMoves;
-        } else {
+        }
+        checkCol = startCol;
+        ChessPosition checkPosition = new ChessPosition(checkRow, checkCol);
+        checkPiece = board.getPiece(checkPosition);
+        if (checkPiece==null) {
             if (checkRow==promotionRow) {
-                checkCol = startCol;
-                checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
-                if (checkPiece==null) {
-                    possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),PieceType.QUEEN));
-                    possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),PieceType.BISHOP));
-                    possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),PieceType.ROOK));
-                    possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),PieceType.KNIGHT));
-                }
-                checkCol = startCol-1;
-                if (checkCol>=1&&checkCol<=8) {
-                    checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
-                    if (checkPiece != null) {
-                        if (checkPiece.getTeamColor() != pColor) {
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.QUEEN));
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.BISHOP));
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.ROOK));
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.KNIGHT));
-                        }
-                    }
-                }
-                checkCol = startCol+1;
-                if (checkCol>=1&&checkCol<=8) {
-                    checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
-                    if (checkPiece != null) {
-                        if (checkPiece.getTeamColor() != pColor) {
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.QUEEN));
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.BISHOP));
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.ROOK));
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), PieceType.KNIGHT));
-                        }
-                    }
-                }
+                possibleMoves.addAll(promotePawn(myPosition,checkPosition));
             } else {
-                checkCol = startCol;
-                checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
-                if (checkPiece==null) {
-                    possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),null));
-                    if ((this.getTeamColor()==ChessGame.TeamColor.BLACK&&startRow==7)||
-                        (this.getTeamColor()==ChessGame.TeamColor.WHITE&&startRow==2)) {
-                        checkRow = checkRow+baseOffset;
-                        if (board.getPiece(new ChessPosition(checkRow, checkCol)) == null) {
-                            possibleMoves.add(new ChessMove(myPosition,new ChessPosition(checkRow,checkCol),null));
-                        }
-                        checkRow = startRow+baseOffset;
-                    }
+                possibleMoves.add(new ChessMove(myPosition,checkPosition,null));
+            }
+            //Forward 2 if on start row
+            if (onStartRow) {
+                checkRow = checkRow+baseOffset;
+                checkPosition = new ChessPosition(checkRow, checkCol);
+                if (board.getPiece(checkPosition) == null) {
+                    possibleMoves.add(new ChessMove(myPosition,checkPosition,null));
                 }
-                //Base Logic to the sides
-                checkCol = startCol-1;
-                if (checkCol>=1&&checkCol<=8) {
-                    checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
-                    if (checkPiece != null) {
-                        if (checkPiece.getTeamColor() != pColor) {
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), null));
-                        }
-                    }
-                }
-                checkCol = startCol+1;
-                if (checkCol>=1&&checkCol<=8) {
-                    checkPiece = board.getPiece(new ChessPosition(checkRow, checkCol));
-                    if (checkPiece != null) {
-                        if (checkPiece.getTeamColor() != pColor) {
-                            possibleMoves.add(new ChessMove(myPosition, new ChessPosition(checkRow, checkCol), null));
-                        }
-                    }
+                checkRow = startRow+baseOffset;
+            }
+        }
+
+        //Base Logic to the sides
+        checkCol = startCol-1;
+        checkPosition = new ChessPosition(checkRow, checkCol);
+        if (checkCol>=1&&checkCol<=8) {
+            checkPiece = board.getPiece(checkPosition);
+            if (checkPiece != null && checkPiece.getTeamColor() != pColor) {
+                if (checkRow==promotionRow) {
+                    possibleMoves.addAll(promotePawn(myPosition,checkPosition));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition,checkPosition,null));
                 }
             }
         }
+        checkCol = startCol+1;
+        checkPosition = new ChessPosition(checkRow, checkCol);
+        if (checkCol>=1&&checkCol<=8) {
+            checkPiece = board.getPiece(checkPosition);
+            if (checkPiece != null && checkPiece.getTeamColor() != pColor) {
+                if (checkRow == promotionRow) {
+                    possibleMoves.addAll(promotePawn(myPosition, checkPosition));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, checkPosition, null));
+                }
+            }
+        }
+
+        return possibleMoves;
+    }
+    public ArrayList<ChessMove> promotePawn(ChessPosition myPosition,ChessPosition checkPosition) {
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        possibleMoves.add(new ChessMove(myPosition,checkPosition,PieceType.QUEEN));
+        possibleMoves.add(new ChessMove(myPosition,checkPosition,PieceType.BISHOP));
+        possibleMoves.add(new ChessMove(myPosition,checkPosition,PieceType.ROOK));
+        possibleMoves.add(new ChessMove(myPosition,checkPosition,PieceType.KNIGHT));
 
         return possibleMoves;
     }

@@ -133,14 +133,12 @@ public class ChessGame {
             for (int j=1; j<=8; j++){
                 checkPosition = new ChessPosition(i,j);
                 checkPiece = mainBoard.getPiece(checkPosition);
-                if (checkPiece != null) {
-                    if (checkPiece.getTeamColor() != teamColor){
-                        checkMoves = checkPiece.pieceMoves(mainBoard,checkPosition);
-                        for (ChessMove possibleMove : checkMoves){
-                            if (possibleMove.getEndPosition().getRow()==kingPosition.getRow() && possibleMove.getEndPosition().getColumn()==kingPosition.getColumn()){
-                                isCheck = true;
-                                break;
-                            }
+                if (checkPiece != null && checkPiece.getTeamColor() != teamColor) {
+                    checkMoves = checkPiece.pieceMoves(mainBoard,checkPosition);
+                    for (ChessMove possibleMove : checkMoves){
+                        if (possibleMove.getEndPosition().getRow()==kingPosition.getRow() && possibleMove.getEndPosition().getColumn()==kingPosition.getColumn()){
+                            isCheck = true;
+                            break;
                         }
                     }
                 }
@@ -162,22 +160,19 @@ public class ChessGame {
 
         if (!isInCheck(teamColor)){
             return false;
-        } else {
-            for (int i=1; i<=8; i++) {
-                for (int j = 1; j <= 8; j++) {
-                    checkPosition = new ChessPosition(i,j);
-                    checkPiece = mainBoard.getPiece(checkPosition);
-                    if (checkPiece!=null){
-                        if (checkPiece.getTeamColor()==teamColor) {
-                            if(!validMoves(checkPosition).isEmpty()){
-                                isCheckmate = false;
-                            }
-                        }
-                    }
+        }
+        for (int i=1; i<=8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                checkPosition = new ChessPosition(i, j);
+                checkPiece = mainBoard.getPiece(checkPosition);
+                if (checkPiece != null &&
+                        checkPiece.getTeamColor() == teamColor &&
+                        !validMoves(checkPosition).isEmpty()) {
+                    isCheckmate = false;
                 }
             }
-            return isCheckmate;
         }
+        return isCheckmate;
     }
 
     /**
@@ -199,12 +194,10 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++) {
                 checkPosition = new ChessPosition(i,j);
                 checkPiece = mainBoard.getPiece(checkPosition);
-                if (checkPiece!=null){
-                    if (checkPiece.getTeamColor()==teamColor) {
-                        if(!validMoves(checkPosition).isEmpty()){
-                            isStalemate = false;
-                        }
-                    }
+                if (checkPiece!=null &&
+                        checkPiece.getTeamColor()==teamColor &&
+                        !validMoves(checkPosition).isEmpty()){
+                    isStalemate = false;
                 }
             }
         }

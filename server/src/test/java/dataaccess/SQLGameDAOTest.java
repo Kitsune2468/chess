@@ -39,9 +39,9 @@ public class SQLGameDAOTest {
         GameData resultGameData;
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var st8ment = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM games WHERE gameID=?")) {
-                st8ment.setInt(1, testGameData.gameID());
-                try (var results = st8ment.executeQuery()) {
+            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, chessGame FROM games WHERE gameID=?")) {
+                statement.setInt(1, testGameData.gameID());
+                try (var results = statement.executeQuery()) {
                     results.next();
                     var gameID = results.getInt(("gameID"));
                     var whiteUsername = results.getString("whiteUsername");
