@@ -10,17 +10,20 @@ import java.util.Scanner;
 public class PostLoginUI {
     ServerFacade server;
     Scanner scanner = new Scanner(System.in);
+    PreLoginUI preLoginUI;
+    boolean loggedIn = true;
 
-    public PostLoginUI(ServerFacade serverFacade) {
+    public PostLoginUI(ServerFacade serverFacade, PreLoginUI referencePreLoginUI) {
         server = serverFacade;
+        preLoginUI = referencePreLoginUI;
     }
 
     public void run() {
-        boolean loggedIn = false;
+        loggedIn = true;
         String username = "[Logged In]";
         System.out.print("\nLogged in!");
         help();
-        while(!loggedIn) {
+        while(loggedIn) {
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
@@ -46,6 +49,7 @@ public class PostLoginUI {
 
                 case "logout":
                     logout();
+                    break;
 
                 case null, default:
                     System.out.println("Invalid command, please try again. (Type help to display available commands.)\n");
@@ -59,7 +63,7 @@ public class PostLoginUI {
             //ArrayList<GameTemplateResult> currentGames = server.listGames();
 
         } catch (Exception e) {
-            System.out.println("IDK, error or something lol");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -92,6 +96,8 @@ public class PostLoginUI {
     public void logout() {
         try {
             server.logout();
+            System.out.println("\nLogging out...");
+            loggedIn = false;
         } catch (Exception e) {
             System.out.println("IDK, error or something lol");
         }

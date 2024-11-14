@@ -8,27 +8,30 @@ import java.util.Scanner;
 public class PreLoginUI {
     ServerFacade server;
     Scanner scanner = new Scanner(System.in);
-    PostLoginUI postLoginUI = new PostLoginUI(server);
-    boolean loggedIn = false;
+    PostLoginUI postLoginUI;
+    boolean quit = false;
 
     public PreLoginUI(ServerFacade serverFacade) {
         server = serverFacade;
+        postLoginUI = new PostLoginUI(server,this);
     }
 
     public void run() {
-        loggedIn = false;
+        quit = false;
         String username = "[Not Logged In]";
         help();
-        while(!loggedIn) {
+        while(!quit) {
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
                 case "login":
                     login();
+                    help();
                     break;
 
                 case "register":
                     register();
+                    help();
                     break;
 
                 case "help":
@@ -37,15 +40,14 @@ public class PreLoginUI {
 
                 case "quit":
                     quit();
-                    System.exit(0);
+                    break;
 
                 case null, default:
                     System.out.println("Invalid command, please try again. (Type help to display available commands.)\n");
                     break;
             }
         }
-
-        postLoginUI.run();
+        System.exit(0);
     }
 
     public void login() {
@@ -60,7 +62,7 @@ public class PreLoginUI {
 
         try {
             server.login(username,password);
-            loggedIn = true;
+            postLoginUI.run();
         } catch (DataAccessException e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
@@ -82,7 +84,7 @@ public class PreLoginUI {
 
         try {
             server.register(username,password,email);
-            loggedIn = true;
+            postLoginUI.run();
         } catch (DataAccessException e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
@@ -98,6 +100,7 @@ public class PreLoginUI {
 
     public void quit() {
         System.out.println("Quitting program...");
+        quit = true;
     }
 
 }
