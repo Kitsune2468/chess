@@ -129,17 +129,18 @@ public class ChessGame {
         }
 
         // Check opposing piece moves and if contain king position, check is true
-        for (int i=1; i<=8; i++){
-            for (int j=1; j<=8; j++){
-                checkPosition = new ChessPosition(i,j);
-                checkPiece = mainBoard.getPiece(checkPosition);
-                if (checkPiece != null && checkPiece.getTeamColor() != teamColor) {
-                    checkMoves = checkPiece.pieceMoves(mainBoard,checkPosition);
-                    for (ChessMove possibleMove : checkMoves){
-                        if (possibleMove.getEndPosition().getRow()==kingPosition.getRow() && possibleMove.getEndPosition().getColumn()==kingPosition.getColumn()){
-                            isCheck = true;
-                            break;
-                        }
+        for (int i=1; i<=64; i++){
+            int y = ((i-1)/8)+1;
+            int x = (i-1)%8+1;
+            checkPosition = new ChessPosition(y,x);
+            checkPiece = mainBoard.getPiece(checkPosition);
+            if (checkPiece != null && checkPiece.getTeamColor() != teamColor) {
+                checkMoves = checkPiece.pieceMoves(mainBoard,checkPosition);
+                for (ChessMove possibleMove : checkMoves){
+                    ChessPosition possible = possibleMove.getEndPosition();
+                    if (possible.getRow()==kingPosition.getRow() && possible.getColumn()==kingPosition.getColumn()){
+                        isCheck = true;
+                        break;
                     }
                 }
             }

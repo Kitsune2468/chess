@@ -355,28 +355,11 @@ public class ChessPiece {
         //Base Logic to the sides
         checkCol = startCol-1;
         checkPosition = new ChessPosition(checkRow, checkCol);
-        if (checkCol>=1&&checkCol<=8) {
-            checkPiece = board.getPiece(checkPosition);
-            if (checkPiece != null && checkPiece.getTeamColor() != pColor) {
-                if (checkRow==promotionRow) {
-                    possibleMoves.addAll(promotePawn(myPosition,checkPosition));
-                } else {
-                    possibleMoves.add(new ChessMove(myPosition,checkPosition,null));
-                }
-            }
-        }
+        possibleMoves.addAll(pawnValidPosition(board,myPosition,checkPosition, promotionRow));
+
         checkCol = startCol+1;
         checkPosition = new ChessPosition(checkRow, checkCol);
-        if (checkCol>=1&&checkCol<=8) {
-            checkPiece = board.getPiece(checkPosition);
-            if (checkPiece != null && checkPiece.getTeamColor() != pColor) {
-                if (checkRow == promotionRow) {
-                    possibleMoves.addAll(promotePawn(myPosition, checkPosition));
-                } else {
-                    possibleMoves.add(new ChessMove(myPosition, checkPosition, null));
-                }
-            }
-        }
+        possibleMoves.addAll(pawnValidPosition(board,myPosition,checkPosition, promotionRow));
 
         return possibleMoves;
     }
@@ -387,6 +370,22 @@ public class ChessPiece {
         possibleMoves.add(new ChessMove(myPosition,checkPosition,PieceType.ROOK));
         possibleMoves.add(new ChessMove(myPosition,checkPosition,PieceType.KNIGHT));
 
+        return possibleMoves;
+    }
+    public ArrayList<ChessMove> pawnValidPosition(ChessBoard board, ChessPosition myPosition, ChessPosition checkPosition, int promotionRow) {
+        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
+        int checkCol = checkPosition.getColumn();
+        int checkRow = checkPosition.getRow();
+        if (checkCol>=1&&checkCol<=8) {
+            ChessPiece checkPiece = board.getPiece(checkPosition);
+            if (checkPiece != null && checkPiece.getTeamColor() != pColor) {
+                if (checkRow == promotionRow) {
+                    possibleMoves.addAll(promotePawn(myPosition, checkPosition));
+                } else {
+                    possibleMoves.add(new ChessMove(myPosition, checkPosition, null));
+                }
+            }
+        }
         return possibleMoves;
     }
 
