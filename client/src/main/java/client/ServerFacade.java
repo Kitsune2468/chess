@@ -1,17 +1,14 @@
 package client;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import service.requests.GameListResult;
-import service.requests.GameTemplateResult;
+import model.requests.GameListResult;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
+
 
 public class ServerFacade {
     String authToken;
@@ -21,34 +18,34 @@ public class ServerFacade {
         serverUrl = "http://localhost:"+port;
     }
 
-    public void login(String username, String password) throws DataAccessException {
+    public void login(String username, String password) throws Exception {
         var body = Map.of("username", username, "password", password);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/session", jsonBody);
         if (resp.containsKey("Error")) {
-            throw new DataAccessException("Failed to login");
+            throw new Exception("Failed to login");
         }
         authToken = (String)resp.get("authToken");
     }
 
-    public void logout() throws DataAccessException {
+    public void logout() throws Exception {
         Map resp = request("DELETE", "/session", null);
         if (resp.containsKey("Error")) {
-            throw new DataAccessException("Failed to logout"+resp.get("Error").toString());
+            throw new Exception("Failed to logout"+resp.get("Error").toString());
         }
     }
 
-    public void register(String username, String password, String email) throws DataAccessException {
+    public void register(String username, String password, String email) throws Exception {
         var body = Map.of("username", username, "password", password, "email", email);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/user", jsonBody);
         if (resp.containsKey("Error")) {
-            throw new DataAccessException("Failed to register");
+            throw new Exception("Failed to register");
         }
         authToken = (String)resp.get("authToken");
     }
 
-    public GameListResult listGames() throws DataAccessException {
+    public GameListResult listGames() throws Exception {
         Map resp = request("GET", "/game",null);
         if (resp.containsKey("Error")) {
             return null;
@@ -57,31 +54,31 @@ public class ServerFacade {
         GameListResult games = new Gson().fromJson(stringResp, GameListResult.class);
 
         if (games.games().isEmpty()) {
-            throw new DataAccessException("No games found");
+            throw new Exception("No games found");
         }
 
         return games;
     }
 
-    public void createGame(String gameName) throws DataAccessException {
+    public void createGame(String gameName) throws Exception {
         var body = Map.of("gameName", gameName);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/game", jsonBody);
         if (resp.containsKey("Error")) {
-            throw new DataAccessException("Failed to create game: "+resp.get("Error").toString());
+            throw new Exception("Failed to create game: "+resp.get("Error").toString());
         }
     }
 
-    public void joinGame(int gameID, String teamToJoin) throws DataAccessException {
+    public void joinGame(int gameID, String teamToJoin) throws Exception {
         var body = Map.of("gameID", gameID,"playerColor",teamToJoin);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("PUT", "/game", jsonBody);
         if (resp.containsKey("Error")) {
-            throw new DataAccessException("Failed to join game: "+resp.get("Error").toString());
+            throw new Exception("Failed to join game: "+resp.get("Error").toString());
         }
     }
 
-    protected void clearServer() throws DataAccessException {
+    protected void clearServer() throws Exception {
         request("DELETE", "/db", null);
     }
 

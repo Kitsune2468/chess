@@ -5,12 +5,9 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
-import dataaccess.DataAccessException;
-import service.requests.GameListResult;
-import service.requests.GameTemplateResult;
+import model.requests.GameListResult;
+import model.requests.GameTemplateResult;
 
-import javax.swing.*;
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;

@@ -44,7 +44,7 @@ public class ServerFacadeTests {
         try {
             facade.register("username", "password", "email");
             Assertions.assertTrue(true);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail();
         }
     }
@@ -55,7 +55,7 @@ public class ServerFacadeTests {
             facade.register("username", "password", "email");
             facade.register("username", "password", "email");
             Assertions.fail();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.assertTrue(true);
         }
     }
@@ -67,7 +67,7 @@ public class ServerFacadeTests {
             facade.logout();
             facade.login("username","password");
             Assertions.assertTrue(true);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail();
         }
     }
@@ -79,7 +79,7 @@ public class ServerFacadeTests {
             facade.logout();
             facade.login("username","wrongPassword");
             Assertions.fail();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.assertTrue(true);
         }
     }
@@ -90,7 +90,7 @@ public class ServerFacadeTests {
             facade.register("username", "password", "email");
             facade.logout();
             Assertions.assertTrue(true);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail();
         }
     }
@@ -100,7 +100,7 @@ public class ServerFacadeTests {
         try {
             facade.logout();
             Assertions.fail();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.assertTrue(true);
         }
     }
@@ -111,7 +111,7 @@ public class ServerFacadeTests {
             facade.register("username", "password", "email");
             facade.createGame("testGame");
             Assertions.assertTrue(true);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail();
         }
     }
@@ -123,7 +123,7 @@ public class ServerFacadeTests {
             facade.createGame("testGame");
             facade.createGame("testGame");
             Assertions.fail();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.assertTrue(true);
         }
     }
@@ -135,7 +135,7 @@ public class ServerFacadeTests {
             facade.createGame("testGame");
             facade.listGames();
             Assertions.assertTrue(true);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail();
         }
     }
@@ -146,7 +146,7 @@ public class ServerFacadeTests {
             facade.register("username", "password", "email");
             facade.listGames();
             Assertions.fail();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.assertTrue(true);
         }
     }
@@ -158,7 +158,7 @@ public class ServerFacadeTests {
             facade.createGame("testGame");
             facade.joinGame(1,"WHITE");
             Assertions.assertTrue(true);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.fail();
         }
     }
@@ -169,7 +169,7 @@ public class ServerFacadeTests {
             facade.register("username", "password", "email");
             facade.joinGame(1,"WHITE");
             Assertions.fail();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             Assertions.assertTrue(true);
         }
     }

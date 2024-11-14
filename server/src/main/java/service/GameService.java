@@ -5,8 +5,8 @@ import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
-import service.requests.GameListResult;
-import service.requests.GameTemplateResult;
+import model.requests.GameListResult;
+import model.requests.GameTemplateResult;
 
 import java.util.ArrayList;
 import java.util.Objects;

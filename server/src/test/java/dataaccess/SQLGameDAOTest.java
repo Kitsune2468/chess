@@ -4,7 +4,7 @@ import chess.*;
 import com.google.gson.Gson;
 import model.GameData;
 import org.junit.jupiter.api.*;
-import service.requests.GameTemplateResult;
+import model.requests.GameTemplateResult;
 
 import java.sql.*;
 import java.util.ArrayList;

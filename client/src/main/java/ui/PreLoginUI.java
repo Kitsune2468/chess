@@ -1,7 +1,6 @@
 package ui;
 
 import client.ServerFacade;
-import dataaccess.DataAccessException;
 
 import java.util.Scanner;
 
@@ -63,7 +62,7 @@ public class PreLoginUI {
         try {
             server.login(username,password);
             postLoginUI.run();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
     }
@@ -85,7 +84,7 @@ public class PreLoginUI {
         try {
             server.register(username,password,email);
             postLoginUI.run();
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
         }
     }

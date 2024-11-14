@@ -1,6 +1,6 @@
 package dataaccess;
 import model.GameData;
-import service.requests.GameTemplateResult;
+import model.requests.GameTemplateResult;
 
 import java.util.ArrayList;
 

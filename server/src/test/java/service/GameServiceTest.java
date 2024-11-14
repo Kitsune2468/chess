@@ -5,8 +5,8 @@ import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import service.requests.GameListResult;
-import service.requests.GameTemplateResult;
+import model.requests.GameListResult;
+import model.requests.GameTemplateResult;
 
 import java.util.ArrayList;
 
