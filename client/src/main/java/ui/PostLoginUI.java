@@ -195,9 +195,9 @@ public class PostLoginUI {
         printEdgeRow("black");
         for (int row = 1; row <= 8; row++) {
             if (row % 2 == 1) {
-                printRow(board,row,"white");
+                printRow(board,row,"white","back");
             } else {
-                printRow(board,row,"black");
+                printRow(board,row,"black","back");
             }
         }
         printEdgeRow("black");
@@ -206,30 +206,50 @@ public class PostLoginUI {
         printEdgeRow("white");
         for (int row = 8; row >= 1; row--) {
             if (row % 2 == 0) {
-                printRow(board,row,"white");
+                printRow(board,row,"white","norm");
             } else {
-                printRow(board,row,"black");
+                printRow(board,row,"black","norm");
             }
         }
         printEdgeRow("white");
     }
-    private void printRow(ChessBoard board, int rowNumber, String colorRow) {
+    private void printRow(ChessBoard board, int rowNumber, String colorRow, String order) {
         printEdgeSpace(Integer.toString(rowNumber));
-        for (int column = 1; column <= 8; column ++) {
-            if (column % 2 == 1) {
-                if (colorRow == "black") {
-                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        if (order.equals("norm")){
+            for (int column = 1; column <= 8; column ++) {
+                if (column % 2 == 1) {
+                    if (colorRow == "black") {
+                        System.out.print(SET_BG_COLOR_DARK_GREY);
+                    } else {
+                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    }
                 } else {
-                    System.out.print(SET_BG_COLOR_DARK_GREY);
+                    if (colorRow == "white") {
+                        System.out.print(SET_BG_COLOR_DARK_GREY);
+                    } else {
+                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    }
                 }
-            } else {
-                if (colorRow == "white") {
-                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                } else {
-                    System.out.print(SET_BG_COLOR_DARK_GREY);
-                }
+                printSpace(board.getPiece(new ChessPosition(rowNumber, column)));
             }
-            printSpace(board.getPiece(new ChessPosition(rowNumber,column)));
+        }
+        if (order.equals("back")){
+            for (int column = 8; column >= 1; column--) {
+                if (column % 2 == 1) {
+                    if (colorRow == "black") {
+                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    } else {
+                        System.out.print(SET_BG_COLOR_DARK_GREY);
+                    }
+                } else {
+                    if (colorRow == "white") {
+                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    } else {
+                        System.out.print(SET_BG_COLOR_DARK_GREY);
+                    }
+                }
+                printSpace(board.getPiece(new ChessPosition(rowNumber, column)));
+            }
         }
         printEdgeSpace(Integer.toString(rowNumber));
         System.out.println("");
