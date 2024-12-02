@@ -9,8 +9,6 @@ public class Main {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece);
 
-        Server testServer = new Server();
-        testServer.run(8080);
         ServerFacade testFacade = new ServerFacade(8080);
         PreLoginUI preLoginUI = new PreLoginUI(testFacade);
 
