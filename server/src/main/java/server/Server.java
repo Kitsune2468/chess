@@ -4,9 +4,12 @@ import dataaccess.*;
 import handlers.DataBaseHandler;
 import handlers.GameHandler;
 import handlers.UserHandler;
+import handlers.WebSocketHandler;
 import service.DataBaseService;
 import service.GameService;
 import service.UserService;
+import org.eclipse.jetty.websocket.api.annotations.*;
+import org.eclipse.jetty.websocket.api.*;
 import spark.*;
 
 public class Server {
@@ -23,6 +26,8 @@ public class Server {
     GameHandler gameHandler;
     UserHandler userHandler;
 
+    WebSocketHandler webSocketHandler;
+
     public Server() {
         try {
             userDAO = new SQLUserDAO();
@@ -36,6 +41,8 @@ public class Server {
             dataBaseHandler = new DataBaseHandler(dataBaseService);
             gameHandler = new GameHandler(gameService);
             userHandler = new UserHandler(userService);
+
+            webSocketHandler = new WebSocketHandler();
         } catch (DataAccessException e) {
             System.out.println("Failed to initialize Server class" + e.getMessage());
         }
@@ -54,6 +61,7 @@ public class Server {
         Spark.post("/game", (req, res) -> (gameHandler).createGame(req, res));
         Spark.get("/game", (req, res) -> (gameHandler).listGames(req, res));
         Spark.put("/game", (req, res) -> (gameHandler).joinGame(req, res));
+        Spark.webSocket("/ws", WebSocketHandler.class);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();

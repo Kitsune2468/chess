@@ -8,24 +8,46 @@ import client.ServerFacade;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 
+import javax.websocket.*;
+import java.net.URI;
+import javax.websocket.Endpoint;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class GamePlayUI {
+public class GamePlayUI extends Endpoint {
     ServerFacade server;
     Scanner scanner = new Scanner(System.in);
     PostLoginUI postLoginUI;
     boolean loggedIn = true;
     Map<Integer, GameTemplateResult> listOfGames = new HashMap<>();
     int gameID;
+    public Session session;
 
-    public GamePlayUI(ServerFacade serverFacade, PostLoginUI referencePostLoginUI, int referenceGameID) {
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
+
+    }
+
+    public void send(String msg) throws Exception {
+        this.session.getBasicRemote().sendText(msg);
+    }
+
+    public GamePlayUI(ServerFacade serverFacade, PostLoginUI referencePostLoginUI, int referenceGameID) throws Exception {
         server = serverFacade;
         postLoginUI = referencePostLoginUI;
         gameID = referenceGameID;
+        URI uri = new URI("ws://localhost:8080/ws");
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        this.session = container.connectToServer(this, uri);
+
+        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+            public void onMessage(String message) {
+                //Do message stuff here?
+            }
+        });
+
     }
 
     public void run() {
@@ -73,13 +95,51 @@ public class GamePlayUI {
             GameListResult list = server.listGames();
             for (GameTemplateResult game : list.games()) {
                 if (game.gameID() == gameID) {
-                    printBoard();
+                    printBoard(new ChessBoard());
                 }
             }
         } catch (Exception e) {
             System.out.println("Failed to logout: "+e.getMessage());
         }
+    }
 
+    private void highlight() {
+        try {
+            GameListResult list = server.listGames();
+            for (GameTemplateResult game : list.games()) {
+                if (game.gameID() == gameID) {
+                    printBoard(new ChessBoard());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to logout: "+e.getMessage());
+        }
+    }
+
+    private void move() {
+        try {
+            GameListResult list = server.listGames();
+            for (GameTemplateResult game : list.games()) {
+                if (game.gameID() == gameID) {
+                    printBoard(new ChessBoard());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to logout: "+e.getMessage());
+        }
+    }
+
+    private void resign() {
+        try {
+            GameListResult list = server.listGames();
+            for (GameTemplateResult game : list.games()) {
+                if (game.gameID() == gameID) {
+                    printBoard(new ChessBoard());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to logout: "+e.getMessage());
+        }
     }
 
     public void leave() {
@@ -260,4 +320,5 @@ public class GamePlayUI {
         }
         System.out.print(RESET_BG_COLOR);
     }
+
 }
