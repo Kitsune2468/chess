@@ -8,9 +8,11 @@ import client.ServerFacade;
 import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
+import websocket.commands.UserGameCommand;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -23,12 +25,15 @@ public class GamePlayUI{
     GameData gameData;
     int gameID;
     boolean observing;
+    String username;
 
-    public GamePlayUI(ServerFacade serverFacade, GameData refGameData, boolean isObserving) throws Exception {
+    public GamePlayUI(ServerFacade serverFacade, GameData refGameData, boolean isObserving, String username) throws Exception {
         server = serverFacade;
         gameData = refGameData;
         gameID = refGameData.gameID();
         observing = isObserving;
+        this.username = username;
+        server.connectWS();
     }
 
     public void run() {
@@ -81,15 +86,18 @@ public class GamePlayUI{
 
     private void redraw() {
         try {
+            server.redraw(gameID);
             GameListResult list = server.listGames();
-            System.out.println("Break1");
             for (GameTemplateResult result : list.games()) {
                 if (result.gameID() == gameID) {
-                    System.out.println("Break2");
-                    printBoard(result.game().getBoard());
+                    ChessBoard board = result.game().getBoard();
+                    if (Objects.equals(result.blackUsername(), username)) {
+                        printBlackBoard(board);
+                    } else {
+                        printWhiteBoard(board);
+                    }
                 }
             }
-            System.out.println("Break3");
         } catch (Exception e) {
             System.out.println("Failed to redraw board: "+e.getMessage());
         }
@@ -100,7 +108,7 @@ public class GamePlayUI{
             GameListResult list = server.listGames();
             for (GameTemplateResult game : list.games()) {
                 if (game.gameID() == gameID) {
-                    printBoard(new ChessBoard());
+                    //printBoard(new ChessBoard());
                 }
             }
         } catch (Exception e) {
@@ -113,7 +121,7 @@ public class GamePlayUI{
             GameListResult list = server.listGames();
             for (GameTemplateResult game : list.games()) {
                 if (game.gameID() == gameID) {
-                    printBoard(new ChessBoard());
+                    //printBoard(new ChessBoard());
                 }
             }
         } catch (Exception e) {
@@ -126,7 +134,7 @@ public class GamePlayUI{
             GameListResult list = server.listGames();
             for (GameTemplateResult game : list.games()) {
                 if (game.gameID() == gameID) {
-                    printBoard(new ChessBoard());
+                    //printBoard(new ChessBoard());
                 }
             }
         } catch (Exception e) {
@@ -171,9 +179,13 @@ public class GamePlayUI{
     }
 
     private static final String SET_EDGE_COLOR = SET_BG_COLOR_DARK_RED;
-    private void printBoard(ChessBoard board) {
-        printWhiteBoard(board);
-        printBlackBoard(board);
+    private void printBoard(GameData gameData, String username) {
+        ChessBoard board = gameData.game().getBoard();
+        if (Objects.equals(gameData.blackUsername(), username)) {
+            printBlackBoard(board);
+        } else {
+            printWhiteBoard(board);
+        }
     }
     private void printBlackBoard(ChessBoard board) {
         printEdgeRow("black");

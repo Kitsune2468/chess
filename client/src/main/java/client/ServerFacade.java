@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import handlers.WebSocketHandler;
 import model.requests.GameListResult;
+import model.requests.GameTemplateResult;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
@@ -159,6 +160,11 @@ public class ServerFacade {
         } catch (Exception e) {
             System.out.println("Failed to connect to server, please try again.");
         }
+    }
+
+    public void redraw(int gameID) {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken,gameID);
+        sendMessage(command);
     }
 
 }

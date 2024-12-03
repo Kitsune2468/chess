@@ -20,10 +20,13 @@ public class PostLoginUI {
     PreLoginUI preLoginUI;
     boolean loggedIn = true;
     Map<Integer,GameTemplateResult> listOfGames = new HashMap<>();
+    String username;
 
-    public PostLoginUI(ServerFacade serverFacade, PreLoginUI referencePreLoginUI) {
+    public PostLoginUI(ServerFacade serverFacade, PreLoginUI referencePreLoginUI, String username) {
         server = serverFacade;
         preLoginUI = referencePreLoginUI;
+        this.username = username;
+
     }
 
     public void run() {
@@ -134,7 +137,7 @@ public class PostLoginUI {
                 String blackUsername = resultGame.blackUsername();
                 ChessGame chessGame = resultGame.game();
                 GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame);
-                GamePlayUI gamePlayUI = new GamePlayUI(server, game, true);
+                GamePlayUI gamePlayUI = new GamePlayUI(server, game, true,username);
                 gamePlayUI.run();
             } catch (Exception e) {
                 System.out.println("Invalid game number\n");

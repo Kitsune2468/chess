@@ -12,7 +12,7 @@ public class PreLoginUI {
 
     public PreLoginUI(ServerFacade serverFacade) {
         server = serverFacade;
-        postLoginUI = new PostLoginUI(server,this);
+
     }
 
     public void run() {
@@ -61,6 +61,7 @@ public class PreLoginUI {
 
         try {
             server.login(username,password);
+            postLoginUI = new PostLoginUI(server,this,username);
             postLoginUI.run();
         } catch (Exception e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
@@ -83,6 +84,7 @@ public class PreLoginUI {
 
         try {
             server.register(username,password,email);
+            postLoginUI = new PostLoginUI(server,this,username);
             postLoginUI.run();
         } catch (Exception e) {
             System.out.println("\nInvalid username or password. \n Returning to main menu.\n");
