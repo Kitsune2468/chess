@@ -23,7 +23,7 @@ public class HttpCommunicator {
         authToken = refAuthToken;
     }
 
-    public void login(String username, String password) throws Exception {
+    public String login(String username, String password) throws Exception {
         var body = Map.of("username", username, "password", password);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/session", jsonBody);
@@ -31,6 +31,7 @@ public class HttpCommunicator {
             throw new Exception("Failed to login");
         }
         authToken = (String)resp.get("authToken");
+        return authToken;
     }
 
     public void logout() throws Exception {
@@ -40,7 +41,7 @@ public class HttpCommunicator {
         }
     }
 
-    public void register(String username, String password, String email) throws Exception {
+    public String register(String username, String password, String email) throws Exception {
         var body = Map.of("username", username, "password", password, "email", email);
         var jsonBody = new Gson().toJson(body);
         Map resp = request("POST", "/user", jsonBody);
@@ -48,6 +49,7 @@ public class HttpCommunicator {
             throw new Exception("Failed to register");
         }
         authToken = (String)resp.get("authToken");
+        return authToken;
     }
 
     public GameListResult listGames() throws Exception {

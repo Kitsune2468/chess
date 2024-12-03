@@ -1,6 +1,9 @@
 package client;
 
 import com.google.gson.Gson;
+import ui.GamePlayUI;
+import websocket.commands.LoadGameCommand;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
 import javax.websocket.Endpoint;
@@ -11,15 +14,17 @@ import java.util.Scanner;
 public class WebsocketCommunicator extends Endpoint {
 
     public Session session;
+    ServerFacade facade;
 
-    public WebsocketCommunicator(String domain) throws Exception {
+    public WebsocketCommunicator(String domain, ServerFacade facade) throws Exception {
         URI uri = new URI("ws://"+domain+"/ws");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
+        this.facade = facade;
 
         this.session.addMessageHandler(new MessageHandler.Whole<String>() {
             public void onMessage(String message) {
-                System.out.println(message);
+                handleMessage(message);
             }
         });
     }
@@ -31,18 +36,22 @@ public class WebsocketCommunicator extends Endpoint {
         this.session.getBasicRemote().sendText(msg);
     }
 
-    private void handleMessage(String msg) {
-        if (msg.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
-            NotificationMessage notificationMessage = new Gson().fromJson(msg, NotificationMessage.class);
+    private void handleMessage(String message) {
+        if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
+            NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
             System.out.println(notificationMessage.getMessage());
         }
-        if (msg.contains("\"serverMessageType\":\"ERROR\"")) {
+        if (message.contains("\"serverMessageType\":\"ERROR\"")) {
 
         }
-        if (msg.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
-
+        if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
+            LoadGameMessage result = new Gson().fromJson(message, LoadGameMessage.class);
+            handleLoadGame(result);
         }
     }
 
+    private void handleLoadGame(LoadGameMessage result) {
+        facade.drawBoard(result.getGameData());
+    }
 
 }

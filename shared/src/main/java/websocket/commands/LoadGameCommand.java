@@ -10,18 +10,10 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class MakeMoveCommand extends UserGameCommand{
+public class LoadGameCommand extends UserGameCommand{
 
-    private final ChessMove chessMove;
-
-    public MakeMoveCommand(CommandType commandType, String authToken, Integer gameID, ChessMove chessMove) {
-        super(commandType, authToken, gameID);
-
-        this.chessMove = chessMove;
-    }
-
-    public ChessMove getChessMove() {
-        return chessMove;
+    public LoadGameCommand(String authToken, Integer gameID) {
+        super(CommandType.LOAD_GAME, authToken, gameID);
     }
 
     @Override
@@ -29,14 +21,13 @@ public class MakeMoveCommand extends UserGameCommand{
         if (this == o) {
             return true;
         }
-        if (!(o instanceof MakeMoveCommand)) {
+        if (!(o instanceof LoadGameCommand)) {
             return false;
         }
-        MakeMoveCommand that = (MakeMoveCommand) o;
+        LoadGameCommand that = (LoadGameCommand) o;
         return getCommandType() == that.getCommandType() &&
                 Objects.equals(getAuthToken(), that.getAuthToken()) &&
-                Objects.equals(getGameID(), that.getGameID()) &&
-                Objects.equals(getChessMove(), that.getChessMove());
+                Objects.equals(getGameID(), that.getGameID());
     }
 
     @Override

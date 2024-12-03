@@ -16,9 +16,11 @@ import spark.*;
 import java.util.HashMap;
 
 public class Server {
-    UserDAO userDAO;
-    AuthDAO authDAO;
-    GameDAO gameDAO;
+    private final WebSocketHandler webSocketHandler;
+
+    public UserDAO userDAO;
+    public AuthDAO authDAO;
+    public GameDAO gameDAO;
 
     DataBaseService dataBaseService;
     GameService gameService;
@@ -29,25 +31,23 @@ public class Server {
     GameHandler gameHandler;
     UserHandler userHandler;
 
-    WebSocketHandler webSocketHandler;
-    public HashMap<Session, Integer> currentGameSessions = new HashMap<>();
-
     public Server() {
+        webSocketHandler = new WebSocketHandler(this);
+
         try {
-            userDAO = new SQLUserDAO();
-            authDAO = new SQLAuthDAO();
-            gameDAO = new SQLGameDAO();
+        userDAO = new SQLUserDAO();
+        authDAO = new SQLAuthDAO();
+        gameDAO = new SQLGameDAO();
 
-            dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO);
-            gameService = new GameService(gameDAO, authDAO);
-            userService = new UserService(userDAO, authDAO);
+        dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO);
+        gameService = new GameService(gameDAO, authDAO);
+        userService = new UserService(userDAO, authDAO);
 
-            dataBaseHandler = new DataBaseHandler(dataBaseService);
-            gameHandler = new GameHandler(gameService);
-            userHandler = new UserHandler(userService);
+        dataBaseHandler = new DataBaseHandler(dataBaseService);
+        gameHandler = new GameHandler(gameService);
+        userHandler = new UserHandler(userService);
 
-            webSocketHandler = new WebSocketHandler(this);
-        } catch (DataAccessException e) {
+        } catch (Exception e) {
             System.out.println("Failed to initialize Server class" + e.getMessage());
         }
     }
@@ -57,6 +57,8 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/ws", webSocketHandler);
+
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", (req, res) -> (dataBaseHandler).clear(req, res));
         Spark.post("/user", (req, res) -> (userHandler).addUser(req, res));
@@ -65,17 +67,16 @@ public class Server {
         Spark.post("/game", (req, res) -> (gameHandler).createGame(req, res));
         Spark.get("/game", (req, res) -> (gameHandler).listGames(req, res));
         Spark.put("/game", (req, res) -> (gameHandler).joinGame(req, res));
-        Spark.webSocket("/ws", WebSocketHandler.class);
+
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        //Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
     }
 
     public void stop() {
-        currentGameSessions.clear();
         Spark.stop();
         Spark.awaitStop();
     }

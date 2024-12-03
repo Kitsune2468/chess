@@ -1,31 +1,26 @@
 package websocket.messages;
 
+import model.GameData;
+
 import java.util.Objects;
 
-/**
- * Represents a Message the server can send through a WebSocket
- * 
- * Note: You can add to this class, but you should not alter the existing
- * methods.
- */
-public class LoadGameMessage {
-    ServerMessageType serverMessageType;
+public class LoadGameMessage extends ServerMessage {
 
+    GameData gameData;
 
-
-    public enum ServerMessageType {
-        LOAD_GAME,
-        ERROR,
-        NOTIFICATION
-    }
-
-    public LoadGameMessage(ServerMessageType type) {
-        this.serverMessageType = type;
+    public LoadGameMessage(GameData gameData) {
+        super(ServerMessageType.LOAD_GAME);
+        this.gameData = gameData;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
+
+    public GameData getGameData() {
+        return this.gameData;
+    }
+
 
     @Override
     public boolean equals(Object o) {
