@@ -1,7 +1,10 @@
 package model.requests;
 
+import chess.ChessGame;
+
 public record GameTemplateResult(int gameID,
                                  String whiteUsername,
                                  String blackUsername,
-                                 String gameName) {
+                                 String gameName,
+                                 ChessGame game) {
 }

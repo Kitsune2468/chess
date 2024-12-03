@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
@@ -94,7 +95,7 @@ public class GameServiceTest {
 
     @Test
     public void testListGame() throws Exception {
-        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame");
+        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame", new ChessGame());
         GameListResult testList = new GameListResult(new ArrayList<GameTemplateResult>());
         testList.games().add(testResult);
 
@@ -113,7 +114,7 @@ public class GameServiceTest {
 
     @Test
     public void testListGameWrongToken() throws Exception {
-        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame");
+        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame", new ChessGame());
         GameListResult testList = new GameListResult(new ArrayList<GameTemplateResult>());
         testList.games().add(testResult);
 

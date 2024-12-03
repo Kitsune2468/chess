@@ -12,11 +12,24 @@ import org.eclipse.jetty.websocket.api.*;
 import spark.Request;
 import spark.Response;
 
+@WebSocket
 public class WebSocketHandler {
     public WebSocketHandler() {
     }
 
+    @OnWebSocketConnect
     public void onConnect(Session session, String message) throws Exception {
 
+    }
+
+    @OnWebSocketClose
+    public void onClose(Session session, String message) throws Exception {
+
+    }
+
+    @OnWebSocketMessage
+    public void onMessage(Session session, String message) throws Exception {
+        System.out.printf("Received: %s", message);
+        session.getRemote().sendString("WebSocket response: " + message);
     }
 }

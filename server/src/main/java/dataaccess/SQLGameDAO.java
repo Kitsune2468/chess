@@ -127,7 +127,7 @@ public class SQLGameDAO implements GameDAO {
                         String blackUsername = results.getString("blackUsername");
                         String jsonGame = results.getString("chessGame");
                         ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
-                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName);
+                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName,chessGame);
                         games.add(convertedGame);
                     }
                     return games;

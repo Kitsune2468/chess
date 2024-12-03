@@ -5,6 +5,7 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
+import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 
@@ -17,37 +18,18 @@ import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class GamePlayUI extends Endpoint {
+public class GamePlayUI{
     ServerFacade server;
     Scanner scanner = new Scanner(System.in);
-    PostLoginUI postLoginUI;
     boolean loggedIn = true;
     Map<Integer, GameTemplateResult> listOfGames = new HashMap<>();
+    GameData gameData;
     int gameID;
-    public Session session;
 
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-
-    }
-
-    public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg);
-    }
-
-    public GamePlayUI(ServerFacade serverFacade, PostLoginUI referencePostLoginUI, int referenceGameID) throws Exception {
+    public GamePlayUI(ServerFacade serverFacade, int referenceGameID, GameData refGameData) throws Exception {
         server = serverFacade;
-        postLoginUI = referencePostLoginUI;
         gameID = referenceGameID;
-        URI uri = new URI("ws://localhost:8080/ws");
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        this.session = container.connectToServer(this, uri);
-
-        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-            public void onMessage(String message) {
-                //Do message stuff here?
-            }
-        });
-
+        gameData = refGameData;
     }
 
     public void run() {

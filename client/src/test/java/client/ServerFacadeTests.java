@@ -18,7 +18,7 @@ public class ServerFacadeTests {
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
         try {
-            facade = new ServerFacade(port);
+            facade = new ServerFacade("localhost:"+port);
         } catch (Exception e) {
             System.out.println("Failed to connect to server: "+e.getMessage());
         }
