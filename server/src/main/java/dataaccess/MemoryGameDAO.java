@@ -83,7 +83,7 @@ public class MemoryGameDAO implements GameDAO {
     public ArrayList<GameTemplateResult> getAllGames() {
         ArrayList<GameTemplateResult> games = new ArrayList<GameTemplateResult>();
         for (GameData game : memoryGames) {
-            GameTemplateResult convertedGame = new GameTemplateResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName());
+            GameTemplateResult convertedGame = new GameTemplateResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
             games.add(convertedGame);
         }
         return games;

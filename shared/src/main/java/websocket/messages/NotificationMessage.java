@@ -8,8 +8,14 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class NotificationMessage {
+public class NotificationMessage extends ServerMessage {
     ServerMessageType serverMessageType;
+    String message;
+
+    public NotificationMessage(ServerMessage.ServerMessageType type, String refMessage) {
+        super(type);
+        message = refMessage;
+    }
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -17,12 +23,12 @@ public class NotificationMessage {
         NOTIFICATION
     }
 
-    public NotificationMessage(ServerMessageType type) {
-        this.serverMessageType = type;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public ServerMessageType getServerMessageType() {
-        return this.serverMessageType;
+    public String getMessage() {
+        return message;
     }
 
     @Override
@@ -34,7 +40,8 @@ public class NotificationMessage {
             return false;
         }
         NotificationMessage that = (NotificationMessage) o;
-        return getServerMessageType() == that.getServerMessageType();
+        return (getServerMessageType() == that.getServerMessageType() &&
+                Objects.equals(getMessage(), that.getMessage()));
     }
 
     @Override

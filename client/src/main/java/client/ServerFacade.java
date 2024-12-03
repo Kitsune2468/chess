@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import handlers.WebSocketHandler;
 import model.requests.GameListResult;
+import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -142,5 +143,22 @@ public class ServerFacade {
 //
 //        return respMap;
 //    }
+
+    public void connectWS() {
+        try {
+            ws = new WebsocketCommunicator(domain);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to server");
+        }
+    }
+
+    public void sendMessage(UserGameCommand command) {
+        String message = new Gson().toJson(command);
+        try {
+            ws.send(message);
+        } catch (Exception e) {
+            System.out.println("Failed to connect to server, please try again.");
+        }
+    }
 
 }
