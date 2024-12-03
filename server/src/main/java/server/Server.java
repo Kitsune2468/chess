@@ -5,12 +5,15 @@ import handlers.DataBaseHandler;
 import handlers.GameHandler;
 import handlers.UserHandler;
 import handlers.WebSocketHandler;
+import org.eclipse.jetty.websocket.api.Session;
 import service.DataBaseService;
 import service.GameService;
 import service.UserService;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
 import spark.*;
+
+import java.util.HashMap;
 
 public class Server {
     UserDAO userDAO;
@@ -27,6 +30,7 @@ public class Server {
     UserHandler userHandler;
 
     WebSocketHandler webSocketHandler;
+    public HashMap<Session, Integer> currentGameSessions = new HashMap<>();
 
     public Server() {
         try {
@@ -42,7 +46,7 @@ public class Server {
             gameHandler = new GameHandler(gameService);
             userHandler = new UserHandler(userService);
 
-            webSocketHandler = new WebSocketHandler();
+            webSocketHandler = new WebSocketHandler(this);
         } catch (DataAccessException e) {
             System.out.println("Failed to initialize Server class" + e.getMessage());
         }
@@ -71,6 +75,7 @@ public class Server {
     }
 
     public void stop() {
+        currentGameSessions.clear();
         Spark.stop();
         Spark.awaitStop();
     }

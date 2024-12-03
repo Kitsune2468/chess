@@ -5,6 +5,7 @@ import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
+import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 
@@ -123,12 +124,18 @@ public class PostLoginUI {
 
             System.out.print("Enter the number for the game you want to join:\n   ");
             String line = scanner.nextLine();
-            int gameID = 0;
             int gameNumber = 0;
             try {
                 gameNumber = Integer.parseInt(line.strip());
-                gameID = listOfGames.get(gameNumber).gameID();
-                printBoard(new ChessGame().getBoard());
+                GameTemplateResult resultGame = listOfGames.get(gameNumber);
+                int gameID = resultGame.gameID();
+                String gameName = resultGame.gameName();
+                String whiteUsername = resultGame.whiteUsername();
+                String blackUsername = resultGame.blackUsername();
+                ChessGame chessGame = resultGame.game();
+                GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame);
+                GamePlayUI gamePlayUI = new GamePlayUI(server, game, true);
+                gamePlayUI.run();
             } catch (Exception e) {
                 System.out.println("Invalid game number\n");
             }

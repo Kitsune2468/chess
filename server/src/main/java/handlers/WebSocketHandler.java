@@ -6,6 +6,7 @@ import model.GameData;
 import model.requests.CreateGameRequest;
 import model.requests.GameListResult;
 import model.requests.JoinGameRequest;
+import server.Server;
 import service.GameService;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
@@ -14,17 +15,23 @@ import spark.Response;
 
 @WebSocket
 public class WebSocketHandler {
-    public WebSocketHandler() {
+    Server server;
+    public int sessionCounter;
+
+
+    public WebSocketHandler(Server refServer) {
+        server = refServer;
+        sessionCounter = 0;
     }
 
     @OnWebSocketConnect
-    public void onConnect(Session session, String message) throws Exception {
-
+    public void onConnect(Session session) throws Exception {
+        server.currentGameSessions.put(session, sessionCounter);
     }
 
     @OnWebSocketClose
     public void onClose(Session session, String message) throws Exception {
-
+        server.currentGameSessions.remove(session);
     }
 
     @OnWebSocketMessage

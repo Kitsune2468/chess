@@ -9,9 +9,6 @@ import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 
-import javax.websocket.*;
-import java.net.URI;
-import javax.websocket.Endpoint;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -21,23 +18,25 @@ import static ui.EscapeSequences.*;
 public class GamePlayUI{
     ServerFacade server;
     Scanner scanner = new Scanner(System.in);
-    boolean loggedIn = true;
+    boolean inGame = true;
     Map<Integer, GameTemplateResult> listOfGames = new HashMap<>();
     GameData gameData;
     int gameID;
+    boolean observing;
 
-    public GamePlayUI(ServerFacade serverFacade, int referenceGameID, GameData refGameData) throws Exception {
+    public GamePlayUI(ServerFacade serverFacade, GameData refGameData, boolean isObserving) throws Exception {
         server = serverFacade;
-        gameID = referenceGameID;
         gameData = refGameData;
+        gameID = refGameData.gameID();
+        observing = isObserving;
     }
 
     public void run() {
-        loggedIn = true;
+        inGame = true;
         String username = "[Logged In]";
         System.out.print("\nLogged in!");
         help();
-        while(loggedIn) {
+        while(inGame) {
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
@@ -50,10 +49,18 @@ public class GamePlayUI{
                     break;
 
                 case "move":
+                    if (observing) {
+                        System.out.println("You are observing, and cannot make moves.");
+                        break;
+                    }
                     move();
                     break;
 
                 case "resign":
+                    if (observing) {
+                        System.out.println("You are observing, and cannot resign.");
+                        break;
+                    }
                     resign();
                     break;
 
@@ -75,13 +82,16 @@ public class GamePlayUI{
     private void redraw() {
         try {
             GameListResult list = server.listGames();
-            for (GameTemplateResult game : list.games()) {
-                if (game.gameID() == gameID) {
-                    printBoard(new ChessBoard());
+            System.out.println("Break1");
+            for (GameTemplateResult result : list.games()) {
+                if (result.gameID() == gameID) {
+                    System.out.println("Break2");
+                    printBoard(result.game().getBoard());
                 }
             }
+            System.out.println("Break3");
         } catch (Exception e) {
-            System.out.println("Failed to logout: "+e.getMessage());
+            System.out.println("Failed to redraw board: "+e.getMessage());
         }
     }
 
@@ -94,7 +104,7 @@ public class GamePlayUI{
                 }
             }
         } catch (Exception e) {
-            System.out.println("Failed to logout: "+e.getMessage());
+            System.out.println("Failed to highlight valid moves: "+e.getMessage());
         }
     }
 
@@ -127,8 +137,8 @@ public class GamePlayUI{
     public void leave() {
         try {
             server.logout();
-            System.out.println("\nLogging out...");
-            loggedIn = false;
+            System.out.println("\nReturning to main menu...");
+            inGame = false;
         } catch (Exception e) {
             System.out.println("Failed to logout: "+e.getMessage());
         }
@@ -139,8 +149,10 @@ public class GamePlayUI{
         System.out.println("\nHere are your available commands: ");
         System.out.println(SET_MENU_OPTION+"redraw"+RESET_TEXT_COLOR+" - Redraws current game");
         System.out.println(SET_MENU_OPTION+"highlight"+RESET_TEXT_COLOR+" - Highlight the legal moves for a piece");
-        System.out.println(SET_MENU_OPTION+"move"+RESET_TEXT_COLOR+" - Make a move");
-        System.out.println(SET_MENU_OPTION+"resign"+RESET_TEXT_COLOR+" - Resign from the game");
+        if (!observing) {
+            System.out.println(SET_MENU_OPTION + "move" + RESET_TEXT_COLOR + " - Make a move");
+            System.out.println(SET_MENU_OPTION + "resign" + RESET_TEXT_COLOR + " - Resign from the game");
+        }
         System.out.println(SET_MENU_OPTION+"help"+RESET_TEXT_COLOR+" - Displays the available commands");
         System.out.println(SET_MENU_OPTION+"leave"+RESET_TEXT_COLOR+" - Leaves the game and returns to main menu\n");
     }
