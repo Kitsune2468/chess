@@ -20,11 +20,24 @@ public class GamePlayUI{
     int gameID;
     boolean observing;
     String username;
+    String team;
+    BoardPrinter printer = new BoardPrinter();
 
     public GamePlayUI(ServerFacade serverFacade, GameData refGameData, boolean isObserving, String username) throws Exception {
         server = serverFacade;
         gameData = refGameData;
         gameID = refGameData.gameID();
+        team = null;
+        if (gameData.whiteUsername() != null) {
+            if (gameData.whiteUsername().equals(username)) {
+                team = "white";
+            }
+        }
+        if (gameData.blackUsername() != null) {
+            if (gameData.blackUsername().equals(username)) {
+                team = "black";
+            }
+        }
         observing = isObserving;
         this.username = username;
         server.connectWS(username);
@@ -33,6 +46,7 @@ public class GamePlayUI{
 
     public void run() {
         inGame = true;
+        server.sendConnect(gameID);
         if (!observing) {
             boolean isBlackPlayer = gameData.blackUsername().equals(username);
             boolean isWhitePlayer = gameData.whiteUsername().equals(username);
@@ -55,12 +69,15 @@ public class GamePlayUI{
                     leave();
                 }
             }
+        } else {
+            help();
         }
 
         String username = "[Game]";
         System.out.print("\nEntered Game!");
-        help();
+
         while(inGame) {
+            printer.ResetConsole();
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
@@ -125,7 +142,16 @@ public class GamePlayUI{
             ChessPosition startPosition = getChessPosition("piece");
             server.sendHighlight(gameID,startPosition);
             ChessPosition endPosition = getChessPosition("destination");
-
+            ChessPiece.PieceType promoPiece;
+            if (endPosition.getRow()==1 && team=="black") {
+                promoPiece = getPromotionPiece();
+            } else if (endPosition.getRow()==8 && team=="white") {
+                promoPiece = getPromotionPiece();
+            } else {
+                promoPiece = null;
+            }
+            ChessMove move = new ChessMove(startPosition,endPosition,promoPiece);
+            server.sendMakeMove(gameID, move);
 
         } catch (Exception e) {
             System.out.println("Failed to logout: "+e.getMessage());
@@ -142,7 +168,7 @@ public class GamePlayUI{
 
     public void leave() {
         try {
-            // TODO: leave websocket command here
+            server.sendLeaveSession(gameID);
             System.out.println("\nReturning to main menu...");
             inGame = false;
         } catch (Exception e) {

@@ -9,22 +9,12 @@ import java.util.Objects;
  * methods.
  */
 public class NotificationMessage extends ServerMessage {
-    ServerMessageType serverMessageType;
+
     String message;
 
-    public NotificationMessage(ServerMessage.ServerMessageType type, String refMessage) {
-        super(type);
+    public NotificationMessage(String refMessage) {
+        super(ServerMessage.ServerMessageType.NOTIFICATION);
         message = refMessage;
-    }
-
-    public enum ServerMessageType {
-        LOAD_GAME,
-        ERROR,
-        NOTIFICATION
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getMessage() {

@@ -6,11 +6,11 @@ import java.util.Objects;
 
 public class LoadGameMessage extends ServerMessage {
 
-    GameData gameData;
+    GameData game;
 
     public LoadGameMessage(GameData gameData) {
         super(ServerMessageType.LOAD_GAME);
-        this.gameData = gameData;
+        this.game = gameData;
     }
 
     public ServerMessageType getServerMessageType() {
@@ -18,7 +18,7 @@ public class LoadGameMessage extends ServerMessage {
     }
 
     public GameData getGameData() {
-        return this.gameData;
+        return this.game;
     }
 
     @Override

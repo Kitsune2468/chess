@@ -34,6 +34,7 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+
     }
 
     public void send(String msg) throws Exception {

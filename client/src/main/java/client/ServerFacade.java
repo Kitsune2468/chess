@@ -8,9 +8,7 @@ import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 import ui.BoardPrinter;
-import websocket.commands.LoadGameCommand;
-import websocket.commands.LoadHighlightCommand;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 import websocket.messages.LoadHighlightMessage;
 
 import java.io.IOException;
@@ -90,12 +88,24 @@ public class ServerFacade {
         }
     }
 
+    public void sendConnect(int gameID) {
+        sendCommand(new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken,gameID));
+    }
+
     public void sendRedraw(int gameID) {
         sendCommand(new LoadGameCommand(authToken,gameID));
     }
 
     public void sendHighlight(int gameID, ChessPosition startPosition) {
         sendCommand(new LoadHighlightCommand(authToken,gameID,startPosition));
+    }
+
+    public void sendMakeMove(int gameID, ChessMove move) {
+        sendCommand(new MakeMoveCommand(authToken,gameID,move));
+    }
+
+    public void sendLeaveSession(int gameID) {
+        sendCommand(new LeaveSessionCommand(authToken,gameID));
     }
 
     public void drawBoard(GameData gameData) {

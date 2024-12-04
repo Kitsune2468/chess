@@ -9,6 +9,7 @@ public class PreLoginUI {
     Scanner scanner = new Scanner(System.in);
     PostLoginUI postLoginUI;
     boolean quit = false;
+    BoardPrinter printer = new BoardPrinter();
 
     public PreLoginUI(ServerFacade serverFacade) {
         server = serverFacade;
@@ -20,6 +21,7 @@ public class PreLoginUI {
         String username = "[Not Logged In]";
         help();
         while(!quit) {
+            printer.ResetConsole();
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {

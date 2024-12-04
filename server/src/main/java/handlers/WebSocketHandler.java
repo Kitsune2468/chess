@@ -19,7 +19,6 @@ import java.util.HashMap;
 @WebSocket
 public class WebSocketHandler {
     Server server;
-    public int sessionCounter;
     public static HashMap<Session, Integer> currentGameSessions = new HashMap<>();
 
     public WebSocketHandler(Server server) {
@@ -46,6 +45,10 @@ public class WebSocketHandler {
                 MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
                 handleMakeMove(session, command);
             }
+            if (message.contains("\"commandType\":\"LEAVE\"")) {
+                LeaveSessionCommand command = new Gson().fromJson(message, LeaveSessionCommand.class);
+                handleLeaveSession(session, command);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -64,7 +67,7 @@ public class WebSocketHandler {
             LoadGameMessage message = new LoadGameMessage(updatedGame);
             sendMessage(session,message);
         } catch (Exception e) {
-            ErrorMessage errorMessage = new ErrorMessage("Unable to make move");
+            ErrorMessage errorMessage = new ErrorMessage("Unable to make move: " + e.getMessage());
             sendMessage(session, errorMessage);
         }
     }
@@ -101,6 +104,42 @@ public class WebSocketHandler {
         }
     }
 
+    private void handleConnectSession(Session session, LoadGameCommand command) throws DataAccessException {
+        String token = command.getAuthToken();
+        int gameID = command.getGameID();
+
+        try {
+            AuthData auth = server.authDAO.getAuthByToken(token);
+            GameData gameData = server.gameDAO.getGameByID(gameID);
+            currentGameSessions.put(session,gameID);
+
+            LoadGameMessage message = new LoadGameMessage(gameData);
+            sendMessage(session,message);
+            NotificationMessage notification = new NotificationMessage(auth.username()+" connected");
+            sendBroadcastExclude(session,gameID,notification);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    private void handleLeaveSession(Session session, LeaveSessionCommand command) throws DataAccessException {
+        String token = command.getAuthToken();
+        int gameID = command.getGameID();
+
+        try {
+            AuthData auth = server.authDAO.getAuthByToken(token);
+            GameData gameData = server.gameDAO.getGameByID(gameID);
+            currentGameSessions.remove(session);
+
+            LoadGameMessage message = new LoadGameMessage(gameData);
+            sendMessage(session,message);
+            NotificationMessage notification = new NotificationMessage(auth.username()+" disconnected");
+            sendBroadcastExclude(session,gameID,notification);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
     public void sendMessage(Session session, ServerMessage message) {
         try {
             session.getRemote().sendString(new Gson().toJson(message));
@@ -108,4 +147,29 @@ public class WebSocketHandler {
             throw new RuntimeException(e);
         }
     }
+
+    public void sendBroadcastAll(int gameID, ServerMessage message) {
+        currentGameSessions.forEach((session, value)-> {
+            try {
+                if (gameID == value) {
+                    session.getRemote().sendString(new Gson().toJson(message));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void sendBroadcastExclude(Session exclude, int gameID, ServerMessage message) {
+        currentGameSessions.forEach((session, value)-> {
+            try {
+                if (gameID == value && !session.equals(exclude)) {
+                    session.getRemote().sendString(new Gson().toJson(message));
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
 }

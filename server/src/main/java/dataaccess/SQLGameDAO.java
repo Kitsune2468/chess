@@ -177,7 +177,7 @@ public class SQLGameDAO implements GameDAO {
             var jsonGame = new Gson().toJson(foundGame.game());
 
             try (var conn = DatabaseManager.getConnection()) {
-                try (var preparedStatement = conn.prepareStatement("UPDATE games SET game=? WHERE gameID=?")) {
+                try (var preparedStatement = conn.prepareStatement("UPDATE games SET chessGame=? WHERE gameID=?")) {
                     preparedStatement.setString(1, jsonGame);
                     preparedStatement.setInt(2, gameData.gameID());
 

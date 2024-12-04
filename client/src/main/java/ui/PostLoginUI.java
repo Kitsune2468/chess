@@ -21,6 +21,7 @@ public class PostLoginUI {
     boolean loggedIn = true;
     Map<Integer,GameTemplateResult> listOfGames = new HashMap<>();
     String username;
+    BoardPrinter printer = new BoardPrinter();
 
     public PostLoginUI(ServerFacade serverFacade, PreLoginUI referencePreLoginUI, String username) {
         server = serverFacade;
@@ -35,6 +36,7 @@ public class PostLoginUI {
         System.out.print("\nLogged in!");
         help();
         while(loggedIn) {
+            printer.ResetConsole();
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
@@ -133,7 +135,7 @@ public class PostLoginUI {
                 GamePlayUI gamePlayUI = new GamePlayUI(server, game, true,username);
                 gamePlayUI.run();
             } catch (Exception e) {
-                System.out.println("Invalid game number\n");
+                System.out.println("Invalid game number: "+e.getMessage());
             }
         } catch (Exception e) {
             System.out.println("Failed to observe game");
