@@ -1,19 +1,13 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.ServerFacade;
 import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 import websocket.commands.UserGameCommand;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
@@ -39,6 +33,30 @@ public class GamePlayUI{
 
     public void run() {
         inGame = true;
+        if (!observing) {
+            boolean isBlackPlayer = gameData.blackUsername().equals(username);
+            boolean isWhitePlayer = gameData.whiteUsername().equals(username);
+            if (!(isBlackPlayer||isWhitePlayer)) {
+                System.out.print("Do you want to join the white or black team?\n   ");
+                String line = scanner.nextLine();
+                String teamToJoin = line.strip().toLowerCase();
+                if (teamToJoin.equals("black")) {
+                    teamToJoin = "BLACK";
+                } else if (teamToJoin.equals("white")) {
+                    teamToJoin = "WHITE";
+                } else {
+                    System.out.println("Invalid team color");
+                    leave();
+                }
+                try {
+                    server.joinGame(gameID, teamToJoin);
+                } catch (Exception e) {
+                    System.out.println("Unable to join game, returning to main menu...");
+                    leave();
+                }
+            }
+        }
+
         String username = "[Game]";
         System.out.print("\nEntered Game!");
         help();
@@ -95,43 +113,7 @@ public class GamePlayUI{
 
     private void highlight() {
         try {
-            System.out.print("Enter the column of the piece who's possible moves you want to highlight (Ex: a):\n   ");
-            String line = scanner.nextLine();
-            String column = line.strip();
-            int colNum;
-            switch (column) {
-                case "a":
-                    colNum = 1;
-                    break;
-                case "b":
-                    colNum = 2;
-                    break;
-                case "c":
-                    colNum = 3;
-                    break;
-                case "d":
-                    colNum = 4;
-                    break;
-                case "e":
-                    colNum = 5;
-                    break;
-                case "f":
-                    colNum = 6;
-                    break;
-                case "g":
-                    colNum = 7;
-                    break;
-                case "h":
-                    colNum = 8;
-                    break;
-                case null, default:
-                    System.out.println("Invalid column, returning to game menu...");
-                    return;
-            }
-            System.out.print("Enter the row of the piece who's possible moves you want to highlight (Ex: 4):\n   ");
-            line = scanner.nextLine();
-            int rowNum = Integer.parseInt(line.strip());;
-            ChessPosition startPosition = new ChessPosition(rowNum, colNum);
+            ChessPosition startPosition = getChessPosition("piece");
             server.sendHighlight(gameID,startPosition);
         } catch (Exception e) {
             System.out.println("Failed to highlight valid moves: "+e.getMessage());
@@ -140,6 +122,10 @@ public class GamePlayUI{
 
     private void move() {
         try {
+            ChessPosition startPosition = getChessPosition("piece");
+            server.sendHighlight(gameID,startPosition);
+            ChessPosition endPosition = getChessPosition("destination");
+
 
         } catch (Exception e) {
             System.out.println("Failed to logout: "+e.getMessage());
@@ -190,4 +176,72 @@ public class GamePlayUI{
         System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
     }
 
+    private ChessPosition getChessPosition(String positionType) {
+        System.out.print("Enter the column and row of the "+positionType+" (Ex: a4, e7, etc.):\n   ");
+        String line = scanner.nextLine();
+        if (line.length() != 2) {
+            System.out.println("Invalid coordinate, returning to game menu...");
+            return null;
+        }
+        String column = line.strip().substring(0,1);
+        int colNum;
+        switch (column) {
+            case "a":
+                colNum = 1;
+                break;
+            case "b":
+                colNum = 2;
+                break;
+            case "c":
+                colNum = 3;
+                break;
+            case "d":
+                colNum = 4;
+                break;
+            case "e":
+                colNum = 5;
+                break;
+            case "f":
+                colNum = 6;
+                break;
+            case "g":
+                colNum = 7;
+                break;
+            case "h":
+                colNum = 8;
+                break;
+            case null, default:
+                System.out.println("Invalid coordinate, returning to game menu...");
+                return null;
+        }
+        int rowNum = Integer.parseInt(line.strip().substring(1,2));
+        ChessPosition position = new ChessPosition(rowNum, colNum);
+        return position;
+    }
+
+    private ChessPiece.PieceType getPromotionPiece() {
+        System.out.println("What piece do you want to promote to?");
+        System.out.println("(Queen/Knight/Bishop/Rook)");
+        String line = scanner.nextLine();
+        String column = line.strip().toLowerCase();
+        ChessPiece.PieceType promoPiece;
+        switch (column) {
+            case "queen":
+                promoPiece = ChessPiece.PieceType.QUEEN;
+                break;
+            case "knight":
+                promoPiece = ChessPiece.PieceType.KNIGHT;
+                break;
+            case "bishop":
+                promoPiece = ChessPiece.PieceType.BISHOP;
+                break;
+            case "rook":
+                promoPiece = ChessPiece.PieceType.ROOK;
+                break;
+            case null, default:
+                System.out.println("Invalid coordinate, returning to game menu...");
+                return null;
+        }
+        return promoPiece;
+    }
 }

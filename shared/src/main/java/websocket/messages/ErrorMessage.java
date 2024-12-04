@@ -8,21 +8,21 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class ErrorMessage {
-    ServerMessageType serverMessageType;
+public class ErrorMessage extends ServerMessage{
 
-    public enum ServerMessageType {
-        LOAD_GAME,
-        ERROR,
-        NOTIFICATION
-    }
+    String errorMessage;
 
-    public ErrorMessage(ServerMessageType type) {
-        this.serverMessageType = type;
+    public ErrorMessage(String errorMessage) {
+        super(ServerMessageType.ERROR);
+        this.errorMessage = errorMessage;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     @Override

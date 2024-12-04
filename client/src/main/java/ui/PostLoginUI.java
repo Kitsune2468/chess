@@ -96,26 +96,19 @@ public class PostLoginUI {
             int gameID = 0;
             try {
                 int gameNumber = Integer.parseInt(line.strip());
-                gameID = listOfGames.get(gameNumber).gameID();
+                GameTemplateResult resultGame = listOfGames.get(gameNumber);
+                gameID = resultGame.gameID();
+                String gameName = resultGame.gameName();
+                String whiteUsername = resultGame.whiteUsername();
+                String blackUsername = resultGame.blackUsername();
+                ChessGame chessGame = resultGame.game();
+                GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame);
+                GamePlayUI gamePlayUI = new GamePlayUI(server, game, false,username);
+                gamePlayUI.run();
             } catch (NumberFormatException e) {
                 System.out.println("Invalid game number");
                 return;
             }
-
-            System.out.print("Do you want to join the white or black team?\n   ");
-            line = scanner.nextLine();
-            String teamToJoin = line.strip().toLowerCase();
-            if (teamToJoin.equals("black")) {
-                teamToJoin = "BLACK";
-            } else if (teamToJoin.equals("white")){
-                teamToJoin = "WHITE";
-            } else {
-                System.out.println("Invalid team color");
-                return;
-            }
-
-            server.joinGame(gameID,teamToJoin);
-            printBoard(new ChessGame().getBoard());
         } catch (Exception e) {
             System.out.println("Failed to join game.");
         }

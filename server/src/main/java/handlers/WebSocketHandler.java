@@ -3,19 +3,12 @@ package handlers;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
-import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
-import model.requests.CreateGameRequest;
-import model.requests.GameListResult;
-import model.requests.JoinGameRequest;
 import server.Server;
-import service.GameService;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.*;
-import spark.Spark;
 import websocket.commands.*;
 import websocket.messages.*;
 
@@ -41,12 +34,38 @@ public class WebSocketHandler {
                 LoadGameCommand command = new Gson().fromJson(message, LoadGameCommand.class);
                 handleLoadGame(session, command);
             }
+            if (message.contains("\"commandType\":\"CONNECT\"")) {
+                LoadGameCommand command = new Gson().fromJson(message, LoadGameCommand.class);
+                handleLoadGame(session, command);
+            }
             if (message.contains("\"commandType\":\"HIGHLIGHT\"")) {
                 LoadHighlightCommand command = new Gson().fromJson(message, LoadHighlightCommand.class);
                 handleLoadHighlight(session, command);
             }
+            if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
+                MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
+                handleMakeMove(session, command);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void handleMakeMove(Session session, MakeMoveCommand command) {
+        String token = command.getAuthToken();
+        int gameID = command.getGameID();
+        ChessMove givenMove = command.getChessMove();
+
+        try {
+            AuthData auth = server.authDAO.getAuthByToken(token);
+            GameData gameData = server.gameDAO.getGameByID(gameID);
+            GameData updatedGame = server.gameDAO.makeMove(auth.authToken(), gameData, givenMove);
+
+            LoadGameMessage message = new LoadGameMessage(updatedGame);
+            sendMessage(session,message);
+        } catch (Exception e) {
+            ErrorMessage errorMessage = new ErrorMessage("Unable to make move");
+            sendMessage(session, errorMessage);
         }
     }
 

@@ -1,9 +1,11 @@
 package client;
 
 import com.google.gson.Gson;
+import model.GameData;
 import ui.GamePlayUI;
 import websocket.commands.LoadGameCommand;
 import websocket.commands.LoadHighlightCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.LoadHighlightMessage;
 import websocket.messages.NotificationMessage;
@@ -44,7 +46,8 @@ public class WebsocketCommunicator extends Endpoint {
             System.out.println(notificationMessage.getMessage());
         }
         if (message.contains("\"serverMessageType\":\"ERROR\"")) {
-
+            ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+            System.out.println(errorMessage.getErrorMessage());
         }
         if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGameMessage result = new Gson().fromJson(message, LoadGameMessage.class);

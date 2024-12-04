@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.GameData;
 import model.requests.GameTemplateResult;
@@ -166,6 +167,27 @@ public class SQLGameDAO implements GameDAO {
         } catch (SQLException e) {
             throw new DataAccessException("Failed to check if empty");
         }
+    }
+
+    @Override
+    public GameData makeMove(String authToken, GameData gameData, ChessMove givenMove) throws Exception {
+        try {
+            GameData foundGame = getGameByID(gameData.gameID());
+            foundGame.game().makeMove(givenMove);
+            var jsonGame = new Gson().toJson(foundGame.game());
+
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement("UPDATE games SET game=? WHERE gameID=?")) {
+                    preparedStatement.setString(1, jsonGame);
+                    preparedStatement.setInt(2, gameData.gameID());
+
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return gameData;
     }
 
     private final String[] createGameStatements = {

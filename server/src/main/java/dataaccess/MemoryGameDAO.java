@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import model.GameData;
 import model.requests.GameTemplateResult;
 
@@ -101,6 +102,11 @@ public class MemoryGameDAO implements GameDAO {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public GameData makeMove(String auth, GameData gameData, ChessMove givenMove) throws DataAccessException {
+        return gameData;
     }
 
     @Override

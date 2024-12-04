@@ -1,4 +1,5 @@
 package dataaccess;
+import chess.ChessMove;
 import model.GameData;
 import model.requests.GameTemplateResult;
 
@@ -18,4 +19,6 @@ public interface GameDAO {
     public void clear() throws DataAccessException;
 
     public boolean isGameEmpty() throws DataAccessException;
+
+    public GameData makeMove(String authToken, GameData gameData, ChessMove givenmove) throws Exception;
 }
