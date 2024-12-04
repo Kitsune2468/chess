@@ -3,7 +3,9 @@ package client;
 import com.google.gson.Gson;
 import ui.GamePlayUI;
 import websocket.commands.LoadGameCommand;
+import websocket.commands.LoadHighlightCommand;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.LoadHighlightMessage;
 import websocket.messages.NotificationMessage;
 
 import javax.websocket.Endpoint;
@@ -48,9 +50,17 @@ public class WebsocketCommunicator extends Endpoint {
             LoadGameMessage result = new Gson().fromJson(message, LoadGameMessage.class);
             handleLoadGame(result);
         }
+        if (message.contains("\"serverMessageType\":\"HIGHLIGHT\"")) {
+            LoadHighlightMessage result = new Gson().fromJson(message, LoadHighlightMessage.class);
+            handleLoadHighlight(result);
+        }
     }
 
     private void handleLoadGame(LoadGameMessage result) {
+        facade.drawBoard(result.getGameData());
+    }
+
+    private void handleLoadHighlight(LoadHighlightMessage result) {
         facade.drawBoard(result.getGameData());
     }
 

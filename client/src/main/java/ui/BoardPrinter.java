@@ -1,88 +1,80 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import model.GameData;
 
-import java.util.Objects;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
 public class BoardPrinter {
 
     private static final String SET_EDGE_COLOR = SET_BG_COLOR_DARK_RED;
-    public void printBoard(GameData gameData, String username) {
+    public void printBoard(GameData gameData, String username, Collection<ChessMove> possibleMoves) {
         ChessBoard board = gameData.game().getBoard();
+        System.out.println("");
         if (Objects.equals(gameData.blackUsername(), username)) {
-            printBlackBoard(board);
+            printBlackBoard(board, possibleMoves);
         } else {
-            printWhiteBoard(board);
+            printWhiteBoard(board, possibleMoves);
         }
     }
-    private void printBlackBoard(ChessBoard board) {
+    public void printBoard(GameData gameData, String username) {
+        Collection<ChessMove> nullMoves = Collections.emptyList();
+        printBoard(gameData, username, nullMoves);
+    }
+    private void printBlackBoard(ChessBoard board,Collection<ChessMove> possibleMoves) {
         printEdgeRow("black");
         for (int row = 1; row <= 8; row++) {
-            if (row % 2 == 1) {
-                printRow(board,row,"white","back");
-            } else {
-                printRow(board,row,"black","back");
-            }
+            printRow(board,row,"black", possibleMoves);
         }
         printEdgeRow("black");
     }
-    private void printWhiteBoard(ChessBoard board) {
+    private void printWhiteBoard(ChessBoard board, Collection<ChessMove> possibleMoves) {
         printEdgeRow("white");
         for (int row = 8; row >= 1; row--) {
-            if (row % 2 == 0) {
-                printRow(board,row,"white","norm");
-            } else {
-                printRow(board,row,"black","norm");
-            }
+            printRow(board,row,"white", possibleMoves);
         }
         printEdgeRow("white");
     }
-    private void printRow(ChessBoard board, int rowNumber, String colorRow, String order) {
+    private void printRow(ChessBoard board, int rowNumber, String colorBoard, Collection<ChessMove> possibleMoves) {
         printEdgeSpace(Integer.toString(rowNumber));
-        if (order.equals("norm")){
-            for (int column = 1; column <= 8; column ++) {
-                if (column % 2 == 1) {
-                    if (colorRow == "black") {
-                        System.out.print(SET_BG_COLOR_DARK_GREY);
-                    } else {
-                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    }
-                } else {
-                    if (colorRow == "white") {
-                        System.out.print(SET_BG_COLOR_DARK_GREY);
-                    } else {
-                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    }
-                }
-                printSpace(board.getPiece(new ChessPosition(rowNumber, column)));
-            }
-        }
-        if (order.equals("back")){
-            for (int column = 8; column >= 1; column--) {
-                if (column % 2 == 1) {
-                    if (colorRow == "black") {
-                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    } else {
-                        System.out.print(SET_BG_COLOR_DARK_GREY);
-                    }
-                } else {
-                    if (colorRow == "white") {
-                        System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    } else {
-                        System.out.print(SET_BG_COLOR_DARK_GREY);
-                    }
-                }
-                printSpace(board.getPiece(new ChessPosition(rowNumber, column)));
-            }
+        for (int col = 0; col < 8; col++) {
+            setBackColor(rowNumber, col, colorBoard, possibleMoves);
+            printSpace(board.getPiece(new ChessPosition(rowNumber, col+1)));
         }
         printEdgeSpace(Integer.toString(rowNumber));
         System.out.println("");
+    }
+
+    private void setBackColor(int rowNumber, int colNumber, String colorBoard, Collection<ChessMove> possibleMoves) {
+        int perspectiveRow;
+        if (colorBoard.equals("white")) {
+            perspectiveRow = 9-rowNumber;
+        } else {
+            perspectiveRow = rowNumber;
+        }
+        if (perspectiveRow % 2 == (colNumber+1) % 2) {
+            System.out.print(SET_BG_COLOR_LIGHT_GREY);
+        } else {
+            System.out.print(SET_BG_COLOR_DARK_GREY);
+        }
+        ChessPosition checkPosition = new ChessPosition(rowNumber,colNumber);
+        if (possibleMoves.isEmpty()) {
+            return;
+        }
+        for (ChessMove move : possibleMoves) {
+            if (checkPosition == move.getEndPosition()) {
+                if (perspectiveRow % 2 == 1 && colNumber % 2 == 1) {
+                    System.out.print(SET_BG_COLOR_DARK_GREEN);
+                } else {
+                    System.out.print(SET_BG_COLOR_GREEN);
+                }
+            }
+            if (checkPosition == move.getStartPosition()) {
+                System.out.print(SET_BG_COLOR_YELLOW);
+            }
+        }
     }
 
     private void printEdgeRow(String boardColor) {
@@ -160,4 +152,5 @@ public class BoardPrinter {
         }
         System.out.print(RESET_BG_COLOR);
     }
+
 }

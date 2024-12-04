@@ -1,15 +1,19 @@
 package websocket.messages;
 
+import chess.ChessMove;
 import model.GameData;
 
+import java.util.Collection;
 import java.util.Objects;
 
-public class LoadGameMessage extends ServerMessage {
+public class LoadHighlightMessage extends ServerMessage {
 
     GameData gameData;
+    Collection<ChessMove> possibleMoves;
 
-    public LoadGameMessage(GameData gameData) {
-        super(ServerMessageType.LOAD_GAME);
+    public LoadHighlightMessage(GameData gameData, Collection<ChessMove> possibleMoves) {
+        super(ServerMessageType.HIGHLIGHT);
+        this.possibleMoves = possibleMoves;
         this.gameData = gameData;
     }
 
@@ -21,15 +25,19 @@ public class LoadGameMessage extends ServerMessage {
         return this.gameData;
     }
 
+    public Collection<ChessMove> getPossibleMoves() {
+        return this.possibleMoves;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof LoadGameMessage)) {
+        if (!(o instanceof LoadHighlightMessage)) {
             return false;
         }
-        LoadGameMessage that = (LoadGameMessage) o;
+        LoadHighlightMessage that = (LoadHighlightMessage) o;
         return getServerMessageType() == that.getServerMessageType();
     }
 

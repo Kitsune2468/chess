@@ -34,6 +34,7 @@ public class GamePlayUI{
         observing = isObserving;
         this.username = username;
         server.connectWS(username);
+        redraw();
     }
 
     public void run() {
@@ -94,7 +95,44 @@ public class GamePlayUI{
 
     private void highlight() {
         try {
-
+            System.out.print("Enter the column of the piece who's possible moves you want to highlight (Ex: a):\n   ");
+            String line = scanner.nextLine();
+            String column = line.strip();
+            int colNum;
+            switch (column) {
+                case "a":
+                    colNum = 1;
+                    break;
+                case "b":
+                    colNum = 2;
+                    break;
+                case "c":
+                    colNum = 3;
+                    break;
+                case "d":
+                    colNum = 4;
+                    break;
+                case "e":
+                    colNum = 5;
+                    break;
+                case "f":
+                    colNum = 6;
+                    break;
+                case "g":
+                    colNum = 7;
+                    break;
+                case "h":
+                    colNum = 8;
+                    break;
+                case null, default:
+                    System.out.println("Invalid column, returning to game menu...");
+                    return;
+            }
+            System.out.print("Enter the row of the piece who's possible moves you want to highlight (Ex: 4):\n   ");
+            line = scanner.nextLine();
+            int rowNum = Integer.parseInt(line.strip());;
+            ChessPosition startPosition = new ChessPosition(rowNum, colNum);
+            server.sendHighlight(gameID,startPosition);
         } catch (Exception e) {
             System.out.println("Failed to highlight valid moves: "+e.getMessage());
         }

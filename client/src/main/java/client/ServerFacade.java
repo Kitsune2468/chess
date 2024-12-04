@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import handlers.WebSocketHandler;
 import model.GameData;
@@ -7,7 +8,9 @@ import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 import ui.BoardPrinter;
 import websocket.commands.LoadGameCommand;
+import websocket.commands.LoadHighlightCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadHighlightMessage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,6 +90,10 @@ public class ServerFacade {
 
     public void sendRedraw(int gameID) {
         sendCommand(new LoadGameCommand(authToken,gameID));
+    }
+
+    public void sendHighlight(int gameID, ChessPosition startPosition) {
+        sendCommand(new LoadHighlightCommand(authToken,gameID,startPosition));
     }
 
     public void drawBoard(GameData gameData) {
