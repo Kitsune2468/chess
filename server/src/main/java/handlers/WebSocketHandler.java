@@ -48,8 +48,8 @@ public class WebSocketHandler {
                 handleMakeMove(session, command);
             }
             if (message.contains("\"commandType\":\"RESIGN\"")) {
-                LeaveSessionCommand command = new Gson().fromJson(message, LeaveSessionCommand.class);
-                handleLeaveSession(session, command);
+                ResignCommand command = new Gson().fromJson(message, ResignCommand.class);
+                handleResign(session, command);
             }
             if (message.contains("\"commandType\":\"LEAVE\"")) {
                 LeaveSessionCommand command = new Gson().fromJson(message, LeaveSessionCommand.class);
@@ -69,6 +69,11 @@ public class WebSocketHandler {
         try {
             AuthData auth = server.authDAO.getAuthByToken(token);
             GameData gameData = server.gameDAO.getGameByID(gameID);
+            if (!gameData.gameActive()) {
+                ErrorMessage errorMessage = new ErrorMessage("The game is over. No more moves can be made.");
+                sendMessage(session, errorMessage);
+                return;
+            }
             ChessGame.TeamColor teamToMove = gameData.game().getTeamTurn();
             ChessGame.TeamColor checkColor = null;
             if (gameData.whiteUsername() != null) {
@@ -168,10 +173,22 @@ public class WebSocketHandler {
     private void handleLeaveSession(Session session, LeaveSessionCommand command) throws DataAccessException {
         String token = command.getAuthToken();
         int gameID = command.getGameID();
+        ChessGame.TeamColor teamToLeave = command.getTeamToLeave();
 
         try {
             AuthData auth = server.authDAO.getAuthByToken(token);
             GameData gameData = server.gameDAO.getGameByID(gameID);
+
+            if (teamToLeave != null) {
+                String leaveTeamString = null;
+                if (teamToLeave == ChessGame.TeamColor.WHITE) {
+                    leaveTeamString = "WHITE";
+                } else {
+                    leaveTeamString = "BLACK";
+                }
+                server.gameDAO.joinGame(gameID,leaveTeamString, null);
+            }
+
             currentGameSessions.remove(session);
             System.out.println("Current Sessions: " + currentGameSessions.size());
 
@@ -179,6 +196,50 @@ public class WebSocketHandler {
             sendBroadcastExclude(session,gameID,notification);
         } catch (Exception e) {
             ErrorMessage errorMessage = new ErrorMessage("Unable to leave session: " + e.getMessage());
+            sendMessage(session, errorMessage);
+        }
+    }
+
+    private void handleResign(Session session, ResignCommand command) {
+        String token = command.getAuthToken();
+        int gameID = command.getGameID();
+
+        try {
+            AuthData auth = server.authDAO.getAuthByToken(token);
+            GameData gameData = server.gameDAO.getGameByID(gameID);
+
+            if (!gameData.gameActive()) {
+                ErrorMessage errorMessage = new ErrorMessage("The game is over. No more moves can be made.");
+                sendMessage(session, errorMessage);
+                return;
+            }
+
+            String checkColor = null;
+            if (gameData.whiteUsername() != null) {
+                if (gameData.whiteUsername().equals(auth.username())) {
+                    checkColor = "WHITE";
+                }
+            }
+            if (gameData.blackUsername() != null) {
+                if (gameData.blackUsername().equals(auth.username())) {
+                    checkColor = "BLACK";
+                }
+            }
+            if (checkColor == null) {
+                ErrorMessage errorMessage = new ErrorMessage("Observers cannot resign from a game.");
+                sendMessage(session, errorMessage);
+                return;
+            }
+
+            GameData updatedGame = server.gameDAO.resignGame(auth.authToken(), gameData.gameID(),checkColor, auth.username());
+
+            //LoadGameMessage message = new LoadGameMessage(updatedGame);
+            //sendBroadcastAll(gameID, message);
+            NotificationMessage madeMoveMessage = new NotificationMessage(auth.username()+" has resigned, game over. No more moves can be made.");
+            sendBroadcastAll(gameID,madeMoveMessage);
+            System.out.println("Current Sessions: " + currentGameSessions.size());
+        } catch (Exception e) {
+            ErrorMessage errorMessage = new ErrorMessage("Unable to make move: " + e.getMessage());
             sendMessage(session, errorMessage);
         }
     }

@@ -174,7 +174,14 @@ public class GamePlayUI{
 
     public void leave() {
         try {
-            server.sendLeaveSession(gameID);
+            ChessGame.TeamColor teamToLeave = null;
+            if (gameData.whiteUsername().equals(username)) {
+                teamToLeave = ChessGame.TeamColor.WHITE;
+            }
+            if (gameData.blackUsername().equals(username)) {
+                teamToLeave = ChessGame.TeamColor.BLACK;
+            }
+            server.sendLeaveSession(gameID, teamToLeave);
             System.out.println("\nReturning to main menu...");
             inGame = false;
         } catch (Exception e) {

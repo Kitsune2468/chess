@@ -21,4 +21,6 @@ public interface GameDAO {
     public boolean isGameEmpty() throws DataAccessException;
 
     public GameData makeMove(String authToken, GameData gameData, ChessMove givenmove) throws Exception;
+
+    public GameData resignGame(String authToken, int gameID, String resignTeamColor, String playerName) throws DataAccessException;
 }

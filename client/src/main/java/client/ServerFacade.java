@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -104,8 +105,8 @@ public class ServerFacade {
         sendCommand(new MakeMoveCommand(authToken,gameID,move));
     }
 
-    public void sendLeaveSession(int gameID) {
-        sendCommand(new LeaveSessionCommand(authToken,gameID));
+    public void sendLeaveSession(int gameID, ChessGame.TeamColor teamToLeave) {
+        sendCommand(new LeaveSessionCommand(authToken,gameID, teamToLeave));
     }
 
     public void drawBoard(GameData gameData) {

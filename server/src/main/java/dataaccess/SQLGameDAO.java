@@ -8,6 +8,7 @@ import model.requests.GameTemplateResult;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -25,9 +26,10 @@ public class SQLGameDAO implements GameDAO {
         }
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
+            try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame, gameActive) VALUES(?, ?, ?)", RETURN_GENERATED_KEYS)) {
                 statement.setString(1, gameName);
                 statement.setString(2, jsonGame);
+                statement.setBoolean(3,true);
                 statement.executeUpdate();
 
                 var results = statement.getGeneratedKeys();
@@ -191,6 +193,37 @@ public class SQLGameDAO implements GameDAO {
             throw e;
         }
         return gameData;
+    }
+
+    @Override
+    public GameData resignGame(String authToken, int gameID, String resignTeamColor, String playerName) throws DataAccessException {
+        GameData foundGame = getGameByID(gameID);
+        String blackUsername, whiteUsername;
+        switch (resignTeamColor) {
+            case "WHITE":
+                if (!Objects.equals(foundGame.whiteUsername(),playerName)) {
+                    throw new DataAccessException("You are not able to resign for this player.");
+                }
+                break;
+            case "BLACK":
+                if (!Objects.equals(foundGame.blackUsername(),playerName)) {
+                    throw new DataAccessException("You are not able to resign for this player.");
+                }
+                break;
+            case null, default:
+                throw new DataAccessException("Failed to resign from game");
+        }
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("UPDATE games SET gameActive=? WHERE gameID=?")) {
+                preparedStatement.setBoolean(1,false);
+                preparedStatement.setInt(2,gameID);
+
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+        return foundGame;
     }
 
     private final String[] createGameStatements = {

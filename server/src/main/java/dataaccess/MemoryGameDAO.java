@@ -112,6 +112,11 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public GameData resignGame(String authToken, int gameID, String resignTeamColor, String playerName) throws DataAccessException {
+        return null;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) { return true; }
         if (o == null || getClass() != o.getClass()) { return false; }

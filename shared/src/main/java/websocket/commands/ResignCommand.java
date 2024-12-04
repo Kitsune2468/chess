@@ -12,16 +12,9 @@ import java.util.Objects;
  */
 public class ResignCommand extends UserGameCommand{
 
-    private final ChessMove move;
-
     public ResignCommand(String authToken, Integer gameID, ChessMove move) {
-        super(CommandType.MAKE_MOVE, authToken, gameID);
+        super(CommandType.RESIGN, authToken, gameID);
 
-        this.move = move;
-    }
-
-    public ChessMove getMove() {
-        return move;
     }
 
     @Override
@@ -35,8 +28,7 @@ public class ResignCommand extends UserGameCommand{
         ResignCommand that = (ResignCommand) o;
         return getCommandType() == that.getCommandType() &&
                 Objects.equals(getAuthToken(), that.getAuthToken()) &&
-                Objects.equals(getGameID(), that.getGameID()) &&
-                Objects.equals(getMove(), that.getMove());
+                Objects.equals(getGameID(), that.getGameID());
     }
 
     @Override
