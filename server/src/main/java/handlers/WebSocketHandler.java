@@ -171,6 +171,7 @@ public class WebSocketHandler {
     }
 
     private void handleLeaveSession(Session session, LeaveSessionCommand command) throws DataAccessException {
+        //TODO
         String token = command.getAuthToken();
         int gameID = command.getGameID();
         ChessGame.TeamColor teamToLeave = command.getTeamToLeave();
