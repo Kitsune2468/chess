@@ -99,7 +99,7 @@ public class PreLoginUI {
         System.out.println(SET_MENU_OPTION+"login"+RESET_TEXT_COLOR+" - log in to play chess");
         System.out.println(SET_MENU_OPTION+"register"+RESET_TEXT_COLOR+" - Registers a new user");
         System.out.println(SET_MENU_OPTION+"help"+RESET_TEXT_COLOR+" - Displays the available commands");
-        System.out.println(SET_MENU_OPTION+"quit"+RESET_TEXT_COLOR+" - Quits the program\n");
+        System.out.println(SET_MENU_OPTION+"quit"+RESET_TEXT_COLOR+" - Quits the program");
     }
 
     public void quit() {

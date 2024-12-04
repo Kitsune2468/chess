@@ -74,7 +74,7 @@ public class PostLoginUI {
     public void list() {
         try {
             GameListResult currentGames = server.listGames();
-            System.out.println("\nCurrent games: ");
+            System.out.println("Current games: ");
             int gameCounter = 1;
             listOfGames = new HashMap<>();
             for (var game:currentGames.games()) {
@@ -83,7 +83,6 @@ public class PostLoginUI {
                 printGame(game);
                 gameCounter++;
             }
-            System.out.println("");
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -104,12 +103,12 @@ public class PostLoginUI {
                 String whiteUsername = resultGame.whiteUsername();
                 String blackUsername = resultGame.blackUsername();
                 ChessGame chessGame = resultGame.game();
-                GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame);
+                boolean gameActive = resultGame.gameActive();
+                GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame, gameActive);
                 GamePlayUI gamePlayUI = new GamePlayUI(server, game, false,username);
                 gamePlayUI.run();
             } catch (NumberFormatException e) {
                 System.out.println("Invalid game number");
-                return;
             }
         } catch (Exception e) {
             System.out.println("Failed to join game.");
@@ -131,7 +130,8 @@ public class PostLoginUI {
                 String whiteUsername = resultGame.whiteUsername();
                 String blackUsername = resultGame.blackUsername();
                 ChessGame chessGame = resultGame.game();
-                GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame);
+                boolean gameActive = resultGame.gameActive();
+                GameData game = new GameData(gameID,gameName,whiteUsername,blackUsername,chessGame,gameActive);
                 GamePlayUI gamePlayUI = new GamePlayUI(server, game, true,username);
                 gamePlayUI.run();
             } catch (Exception e) {
@@ -151,7 +151,7 @@ public class PostLoginUI {
             gameName = line.strip();
             server.createGame(gameName);
             System.out.println("Created new game: "+gameName);
-            printBoard(new ChessGame().getBoard());
+            printWhiteBoard(new ChessBoard());
         } catch (Exception e) {
             System.out.println("Error in createGame: "+e.getMessage());
         }
@@ -175,7 +175,7 @@ public class PostLoginUI {
         System.out.println(SET_MENU_OPTION+"observe"+RESET_TEXT_COLOR+" - Observe a current chess game");
         System.out.println(SET_MENU_OPTION+"create"+RESET_TEXT_COLOR+" - Create a new chess game");
         System.out.println(SET_MENU_OPTION+"help"+RESET_TEXT_COLOR+" - Displays the available commands");
-        System.out.println(SET_MENU_OPTION+"logout"+RESET_TEXT_COLOR+" - Logs out and returns to login menu\n");
+        System.out.println(SET_MENU_OPTION+"logout"+RESET_TEXT_COLOR+" - Logs out and returns to login menu");
     }
 
     private void printGame(GameTemplateResult game) {

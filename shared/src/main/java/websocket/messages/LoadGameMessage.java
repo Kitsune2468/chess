@@ -37,4 +37,9 @@ public class LoadGameMessage extends ServerMessage {
     public int hashCode() {
         return Objects.hash(getServerMessageType());
     }
+
+    @Override
+    public String toString() {
+        return "LoadGame: " + game.gameID();
+    }
 }

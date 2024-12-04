@@ -29,7 +29,7 @@ public class SQLGameDAOTest {
         board.resetBoard();
         defaultChessGame.setBoard(board);
 
-        testGameData = new GameData(1, "gamename",null, null, defaultChessGame);
+        testGameData = new GameData(1, "gamename",null, null, defaultChessGame, true);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class SQLGameDAOTest {
                     var blackUsername = results.getString("blackUsername");
                     var gameName = results.getString("gameName");
                     var chessGame = deserializeGame(results.getString("chessGame"));
-                    resultGameData = new GameData(gameID, gameName,whiteUsername, blackUsername, chessGame);
+                    resultGameData = new GameData(gameID, gameName,whiteUsername, blackUsername, chessGame,true);
                 }
             }
         }

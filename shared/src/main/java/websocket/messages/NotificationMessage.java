@@ -38,4 +38,9 @@ public class NotificationMessage extends ServerMessage {
     public int hashCode() {
         return Objects.hash(getServerMessageType());
     }
+
+    @Override
+    public String toString() {
+        return "Notification: " + message;
+    }
 }

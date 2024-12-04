@@ -14,7 +14,7 @@ public class DataBaseServiceTest {
 
     @BeforeAll
     public static void createDataBaseService() throws Exception {
-        controlDataBaseService = new DataBaseService(new MemoryAuthDAO(), new MemoryGameDAO(), new MemoryUserDAO());
+        controlDataBaseService = new DataBaseService(new MemoryAuthDAO(), new MemoryGameDAO(), new MemoryUserDAO(), null);
 
     }
 
@@ -29,7 +29,7 @@ public class DataBaseServiceTest {
         MemoryUserDAO testMemoryUser = new MemoryUserDAO();
         testMemoryUser.addUser(new UserData("username","password","generic@email.com"));
 
-        DataBaseService testBaseService = new DataBaseService(testMemoryAuth, testMemoryGame, testMemoryUser);
+        DataBaseService testBaseService = new DataBaseService(testMemoryAuth, testMemoryGame, testMemoryUser, null);
         testBaseService.clear();
 
         Assertions.assertTrue(testBaseService.checkEmpty());

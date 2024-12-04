@@ -22,7 +22,7 @@ public class MemoryGameDAO implements GameDAO {
         if (getGameByString(gameName) != null) {
             throw new DataAccessException("bad request");
         }
-        GameData newGame = new GameData(gameCounter,gameName,null, null, new ChessGame());
+        GameData newGame = new GameData(gameCounter,gameName,null, null, new ChessGame(), true);
         memoryGames.add(newGame);
         return gameCounter++;
     }
@@ -64,7 +64,8 @@ public class MemoryGameDAO implements GameDAO {
                             searchGame.gameName(),
                             searchGame.whiteUsername(),
                             playerName,
-                            searchGame.game());
+                            searchGame.game(),
+                            searchGame.gameActive());
                     memoryGames.remove(searchGame);
                     memoryGames.add(updatedGame);
                 } else if (joinTeamColor.equals("WHITE")) {
@@ -72,7 +73,8 @@ public class MemoryGameDAO implements GameDAO {
                             searchGame.gameName(),
                             playerName,
                             searchGame.blackUsername(),
-                            searchGame.game());
+                            searchGame.game(),
+                            searchGame.gameActive());
                     memoryGames.remove(searchGame);
                     memoryGames.add(updatedGame);
                 }
@@ -84,7 +86,7 @@ public class MemoryGameDAO implements GameDAO {
     public ArrayList<GameTemplateResult> getAllGames() {
         ArrayList<GameTemplateResult> games = new ArrayList<GameTemplateResult>();
         for (GameData game : memoryGames) {
-            GameTemplateResult convertedGame = new GameTemplateResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+            GameTemplateResult convertedGame = new GameTemplateResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), game.gameActive());
             games.add(convertedGame);
         }
         return games;

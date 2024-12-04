@@ -41,4 +41,9 @@ public class ErrorMessage extends ServerMessage{
     public int hashCode() {
         return Objects.hash(getServerMessageType());
     }
+
+    @Override
+    public String toString() {
+        return "ERROR: " + errorMessage;
+    }
 }

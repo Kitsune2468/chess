@@ -39,7 +39,7 @@ public class Server {
         authDAO = new SQLAuthDAO();
         gameDAO = new SQLGameDAO();
 
-        dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO);
+        dataBaseService = new DataBaseService(authDAO, gameDAO, userDAO, webSocketHandler);
         gameService = new GameService(gameDAO, authDAO);
         userService = new UserService(userDAO, authDAO);
 

@@ -45,4 +45,9 @@ public class LoadHighlightMessage extends ServerMessage {
     public int hashCode() {
         return Objects.hash(getServerMessageType());
     }
+
+    @Override
+    public String toString() {
+        return "LoadHighlight: " + possibleMoves;
+    }
 }

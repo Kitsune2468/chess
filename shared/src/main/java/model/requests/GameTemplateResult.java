@@ -6,5 +6,6 @@ public record GameTemplateResult(int gameID,
                                  String whiteUsername,
                                  String blackUsername,
                                  String gameName,
-                                 ChessGame game) {
+                                 ChessGame game,
+                                 boolean gameActive) {
 }

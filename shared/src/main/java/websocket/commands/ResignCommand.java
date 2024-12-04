@@ -10,11 +10,11 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class MakeMoveCommand extends UserGameCommand{
+public class ResignCommand extends UserGameCommand{
 
     private final ChessMove move;
 
-    public MakeMoveCommand(String authToken, Integer gameID, ChessMove move) {
+    public ResignCommand(String authToken, Integer gameID, ChessMove move) {
         super(CommandType.MAKE_MOVE, authToken, gameID);
 
         this.move = move;
@@ -29,10 +29,10 @@ public class MakeMoveCommand extends UserGameCommand{
         if (this == o) {
             return true;
         }
-        if (!(o instanceof MakeMoveCommand)) {
+        if (!(o instanceof ResignCommand)) {
             return false;
         }
-        MakeMoveCommand that = (MakeMoveCommand) o;
+        ResignCommand that = (ResignCommand) o;
         return getCommandType() == that.getCommandType() &&
                 Objects.equals(getAuthToken(), that.getAuthToken()) &&
                 Objects.equals(getGameID(), that.getGameID()) &&

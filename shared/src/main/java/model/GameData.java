@@ -5,5 +5,6 @@ public record GameData(int gameID,
                        String gameName,
                        String whiteUsername,
                        String blackUsername,
-                       ChessGame game) {
+                       ChessGame game,
+                       boolean gameActive) {
 }

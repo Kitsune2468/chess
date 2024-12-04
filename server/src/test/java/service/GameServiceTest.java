@@ -95,7 +95,7 @@ public class GameServiceTest {
 
     @Test
     public void testListGame() throws Exception {
-        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame", new ChessGame());
+        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame", new ChessGame(), true);
         GameListResult testList = new GameListResult(new ArrayList<GameTemplateResult>());
         testList.games().add(testResult);
 
@@ -114,7 +114,7 @@ public class GameServiceTest {
 
     @Test
     public void testListGameWrongToken() throws Exception {
-        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame", new ChessGame());
+        GameTemplateResult testResult = new GameTemplateResult(1, "testUsername", null,  "TestGame", new ChessGame(), true);
         GameListResult testList = new GameListResult(new ArrayList<GameTemplateResult>());
         testList.games().add(testResult);
 

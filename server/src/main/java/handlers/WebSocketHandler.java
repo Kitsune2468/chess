@@ -1,5 +1,6 @@
 package handlers;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -15,6 +16,7 @@ import websocket.messages.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
@@ -27,7 +29,7 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        System.out.println("Recieved message: " + message);
+        System.out.println("Recieved command: " + message);
         try {
             if (message.contains("\"commandType\":\"LOAD_GAME\"")) {
                 LoadGameCommand command = new Gson().fromJson(message, LoadGameCommand.class);
@@ -35,7 +37,7 @@ public class WebSocketHandler {
             }
             if (message.contains("\"commandType\":\"CONNECT\"")) {
                 LoadGameCommand command = new Gson().fromJson(message, LoadGameCommand.class);
-                handleLoadGame(session, command);
+                handleConnectSession(session, command);
             }
             if (message.contains("\"commandType\":\"HIGHLIGHT\"")) {
                 LoadHighlightCommand command = new Gson().fromJson(message, LoadHighlightCommand.class);
@@ -45,27 +47,53 @@ public class WebSocketHandler {
                 MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
                 handleMakeMove(session, command);
             }
+            if (message.contains("\"commandType\":\"RESIGN\"")) {
+                LeaveSessionCommand command = new Gson().fromJson(message, LeaveSessionCommand.class);
+                handleLeaveSession(session, command);
+            }
             if (message.contains("\"commandType\":\"LEAVE\"")) {
                 LeaveSessionCommand command = new Gson().fromJson(message, LeaveSessionCommand.class);
                 handleLeaveSession(session, command);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ErrorMessage errorMessage = new ErrorMessage("Bad request: " + e.getMessage());
+            sendMessage(session, errorMessage);
         }
     }
 
     private void handleMakeMove(Session session, MakeMoveCommand command) {
         String token = command.getAuthToken();
         int gameID = command.getGameID();
-        ChessMove givenMove = command.getChessMove();
+        ChessMove givenMove = command.getMove();
 
         try {
             AuthData auth = server.authDAO.getAuthByToken(token);
             GameData gameData = server.gameDAO.getGameByID(gameID);
+            ChessGame.TeamColor teamToMove = gameData.game().getTeamTurn();
+            ChessGame.TeamColor checkColor = null;
+            if (gameData.whiteUsername() != null) {
+                if (gameData.whiteUsername().equals(auth.username())) {
+                    checkColor = ChessGame.TeamColor.WHITE;
+                }
+            }
+            if (gameData.blackUsername() != null) {
+                if (gameData.blackUsername().equals(auth.username())) {
+                    checkColor = ChessGame.TeamColor.BLACK;
+                }
+            }
+            if (!Objects.equals(checkColor, teamToMove)) {
+                ErrorMessage errorMessage = new ErrorMessage("It is not your turn. Please wait for the other player to make their move. You cannot make moves if observing.");
+                sendMessage(session, errorMessage);
+                return;
+            }
+
             GameData updatedGame = server.gameDAO.makeMove(auth.authToken(), gameData, givenMove);
 
             LoadGameMessage message = new LoadGameMessage(updatedGame);
-            sendMessage(session,message);
+            sendBroadcastAll(gameID, message);
+            NotificationMessage madeMoveMessage = new NotificationMessage(auth.username()+" made move: " +givenMove);
+            sendBroadcastExclude(session,gameID,madeMoveMessage);
+            System.out.println("Current Sessions: " + currentGameSessions.size());
         } catch (Exception e) {
             ErrorMessage errorMessage = new ErrorMessage("Unable to make move: " + e.getMessage());
             sendMessage(session, errorMessage);
@@ -83,7 +111,8 @@ public class WebSocketHandler {
             LoadGameMessage message = new LoadGameMessage(gameData);
             sendMessage(session,message);
         } catch (Exception e) {
-            throw e;
+            ErrorMessage errorMessage = new ErrorMessage("Unable to load game: " + e.getMessage());
+            sendMessage(session, errorMessage);
         }
     }
 
@@ -100,7 +129,8 @@ public class WebSocketHandler {
             LoadHighlightMessage message = new LoadHighlightMessage(gameData, possibleMoves);
             sendMessage(session,message);
         } catch (Exception e) {
-            throw e;
+            ErrorMessage errorMessage = new ErrorMessage("Unable to load highlight: " + e.getMessage());
+            sendMessage(session, errorMessage);
         }
     }
 
@@ -109,16 +139,29 @@ public class WebSocketHandler {
         int gameID = command.getGameID();
 
         try {
-            AuthData auth = server.authDAO.getAuthByToken(token);
-            GameData gameData = server.gameDAO.getGameByID(gameID);
-            currentGameSessions.put(session,gameID);
+            GameData gameData;
+            AuthData auth;
+            try {
+                auth = server.authDAO.getAuthByToken(token);
+                gameData = server.gameDAO.getGameByID(gameID);
+                currentGameSessions.put(session, gameID);
+            } catch (Exception e) {
+                throw new Exception(e);
+            }
 
-            LoadGameMessage message = new LoadGameMessage(gameData);
-            sendMessage(session,message);
-            NotificationMessage notification = new NotificationMessage(auth.username()+" connected");
-            sendBroadcastExclude(session,gameID,notification);
+            try {
+                LoadGameMessage message = new LoadGameMessage(gameData);
+                sendMessage(session, message);
+                NotificationMessage notification = new NotificationMessage(auth.username() + " connected");
+                sendBroadcastExclude(session, gameID, notification);
+                System.out.println("Current Sessions: " + currentGameSessions.size());
+            } catch (Exception e) {
+                currentGameSessions.remove(session);
+                throw new Exception(e);
+            }
         } catch (Exception e) {
-            throw e;
+            ErrorMessage errorMessage = new ErrorMessage("Unable to connect session: " + e.getMessage());
+            sendMessage(session, errorMessage);
         }
     }
 
@@ -130,21 +173,23 @@ public class WebSocketHandler {
             AuthData auth = server.authDAO.getAuthByToken(token);
             GameData gameData = server.gameDAO.getGameByID(gameID);
             currentGameSessions.remove(session);
+            System.out.println("Current Sessions: " + currentGameSessions.size());
 
-            LoadGameMessage message = new LoadGameMessage(gameData);
-            sendMessage(session,message);
             NotificationMessage notification = new NotificationMessage(auth.username()+" disconnected");
             sendBroadcastExclude(session,gameID,notification);
         } catch (Exception e) {
-            throw e;
+            ErrorMessage errorMessage = new ErrorMessage("Unable to leave session: " + e.getMessage());
+            sendMessage(session, errorMessage);
         }
     }
 
     public void sendMessage(Session session, ServerMessage message) {
         try {
+            System.out.println("Sent message: " + message.toString());
             session.getRemote().sendString(new Gson().toJson(message));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            ErrorMessage errorMessage = new ErrorMessage("Unable to send message: " + e.getMessage());
+            sendMessage(session, errorMessage);
         }
     }
 
@@ -167,9 +212,14 @@ public class WebSocketHandler {
                     session.getRemote().sendString(new Gson().toJson(message));
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                ErrorMessage errorMessage = new ErrorMessage("Unable to send message: " + e.getMessage());
+                sendMessage(session, errorMessage);
             }
         });
+    }
+
+    public void clearSessions() {
+        currentGameSessions.clear();
     }
 
 }

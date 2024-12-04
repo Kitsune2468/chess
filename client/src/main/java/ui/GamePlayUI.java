@@ -27,30 +27,18 @@ public class GamePlayUI{
         server = serverFacade;
         gameData = refGameData;
         gameID = refGameData.gameID();
-        team = null;
-        if (gameData.whiteUsername() != null) {
-            if (gameData.whiteUsername().equals(username)) {
-                team = "white";
-            }
-        }
-        if (gameData.blackUsername() != null) {
-            if (gameData.blackUsername().equals(username)) {
-                team = "black";
-            }
-        }
+        team = checkTeam(gameData);
         observing = isObserving;
         this.username = username;
         server.connectWS(username);
-        redraw();
     }
 
-    public void run() {
+    public void run() throws InterruptedException {
         inGame = true;
         server.sendConnect(gameID);
         if (!observing) {
-            boolean isBlackPlayer = gameData.blackUsername().equals(username);
-            boolean isWhitePlayer = gameData.whiteUsername().equals(username);
-            if (!(isBlackPlayer||isWhitePlayer)) {
+            team = checkTeam(gameData);
+            if (team == null) {
                 System.out.print("Do you want to join the white or black team?\n   ");
                 String line = scanner.nextLine();
                 String teamToJoin = line.strip().toLowerCase();
@@ -73,11 +61,10 @@ public class GamePlayUI{
             help();
         }
 
-        String username = "[Game]";
-        System.out.print("\nEntered Game!");
+        String username = "[Game \""+gameData.gameName()+"\"]";
+        System.out.println("Entered Game!");
 
         while(inGame) {
-            printer.ResetConsole();
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
@@ -123,6 +110,11 @@ public class GamePlayUI{
     private void redraw() {
         try {
             server.sendRedraw(gameID);
+            try {
+                wait(1000);
+            } catch (Exception e) {
+
+            }
         } catch (Exception e) {
             System.out.println("Failed to redraw board: "+e.getMessage());
         }
@@ -139,6 +131,20 @@ public class GamePlayUI{
 
     private void move() {
         try {
+            printGame(gameData);
+            server.sendRedraw(gameID);
+            team = checkTeam(gameData);
+            ChessGame.TeamColor checkColor = null;
+            if (Objects.equals(team, "white")) {
+                checkColor = ChessGame.TeamColor.WHITE;
+            }
+            if (Objects.equals(team, "black")) {
+                checkColor = ChessGame.TeamColor.BLACK;
+            }
+            if (!Objects.equals(checkColor, gameData.game().getTeamTurn())) {
+                System.out.println("It is not your turn. Please wait for the other player to make their move.");
+                return;
+            }
             ChessPosition startPosition = getChessPosition("piece");
             server.sendHighlight(gameID,startPosition);
             ChessPosition endPosition = getChessPosition("destination");
@@ -154,7 +160,7 @@ public class GamePlayUI{
             server.sendMakeMove(gameID, move);
 
         } catch (Exception e) {
-            System.out.println("Failed to logout: "+e.getMessage());
+            System.out.println("Failed to make move: "+e.getMessage());
         }
     }
 
@@ -162,7 +168,7 @@ public class GamePlayUI{
         try {
 
         } catch (Exception e) {
-            System.out.println("Failed to logout: "+e.getMessage());
+            System.out.println("Failed to resign: "+e.getMessage());
         }
     }
 
@@ -186,10 +192,10 @@ public class GamePlayUI{
             System.out.println(SET_MENU_OPTION + "resign" + RESET_TEXT_COLOR + " - Resign from the game");
         }
         System.out.println(SET_MENU_OPTION+"help"+RESET_TEXT_COLOR+" - Displays the available commands");
-        System.out.println(SET_MENU_OPTION+"leave"+RESET_TEXT_COLOR+" - Leaves the game and returns to main menu\n");
+        System.out.println(SET_MENU_OPTION+"leave"+RESET_TEXT_COLOR+" - Leaves the game and returns to main menu");
     }
 
-    private void printGame(GameTemplateResult game) {
+    private void printGame(GameData game) {
         String gameName = game.gameName();
         String blackUser = game.blackUsername();
         if (blackUser == null) {
@@ -269,5 +275,20 @@ public class GamePlayUI{
                 return null;
         }
         return promoPiece;
+    }
+
+    private String checkTeam(GameData gameData) {
+        String foundTeam = null;
+        if (gameData.whiteUsername() != null) {
+            if (gameData.whiteUsername().equals(username)) {
+                foundTeam = "white";
+            }
+        }
+        if (gameData.blackUsername() != null) {
+            if (gameData.blackUsername().equals(username)) {
+                foundTeam = "black";
+            }
+        }
+        return foundTeam;
     }
 }

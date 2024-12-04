@@ -46,37 +46,39 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public GameData getGameByID(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameName, whiteUsername, blackusername, chessGame FROM games WHERE gameID=?")) {
+            try (var statement = conn.prepareStatement("SELECT gameName, whiteUsername, blackusername, chessGame, gameActive FROM games WHERE gameID=?")) {
                 statement.setInt(1, gameID);
                 try (var results = statement.executeQuery()) {
                     results.next();
                     String gameName = results.getString("gameName");
                     String whiteUsername = results.getString("whiteUsername");
                     String blackUsername = results.getString("blackUsername");
+                    boolean gameActive = results.getBoolean("gameActive");
                     String jsonGame = results.getString("chessGame");
                     ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
-                    return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame);
+                    return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame, gameActive);
                 }
             }
         } catch (SQLException e) {
-            return null;
-            //throw new DataAccessException("Game with ID: " + gameID + " could not be found");
+            //return null;
+            throw new DataAccessException("Game with ID: " + gameID + " could not be found");
         }
     }
 
     @Override
     public GameData getGameByString(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackusername, chessGame FROM games WHERE gameName=?")) {
+            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackusername, chessGame, gameActive FROM games WHERE gameName=?")) {
                 statement.setString(1, gameName);
                 try (var results = statement.executeQuery()) {
                     results.next();
                     int gameID = results.getInt("gameID");
                     String whiteUsername = results.getString("whiteUsername");
                     String blackUsername = results.getString("blackUsername");
+                    boolean gameActive = results.getBoolean("gameActive");
                     String jsonGame = results.getString("chessGame");
                     ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
-                    return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame);
+                    return new GameData(gameID, gameName, whiteUsername, blackUsername,chessGame, gameActive);
                 }
             }
         } catch (SQLException e) {
@@ -128,7 +130,8 @@ public class SQLGameDAO implements GameDAO {
                         String blackUsername = results.getString("blackUsername");
                         String jsonGame = results.getString("chessGame");
                         ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
-                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName,chessGame);
+                        boolean gameActive = results.getBoolean("gameActive");
+                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName,chessGame, gameActive);
                         games.add(convertedGame);
                     }
                     return games;
@@ -198,6 +201,7 @@ public class SQLGameDAO implements GameDAO {
               `whiteUsername` varchar(256),
               `blackUsername` varchar(256),
               `chessGame` TEXT DEFAULT NULL,
+              `gameActive` BOOLEAN,
               PRIMARY KEY (`gameID`),
               INDEX(gameID),
               INDEX(gameName)

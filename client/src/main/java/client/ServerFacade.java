@@ -84,7 +84,7 @@ public class ServerFacade {
         try {
             ws.send(message);
         } catch (Exception e) {
-            System.out.println("Failed to connect to server, please try again.");
+            System.out.println(e.getMessage());
         }
     }
 

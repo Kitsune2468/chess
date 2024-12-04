@@ -24,7 +24,7 @@ public class GameHandler {
         try {
             String gameName = newGameRequest.gameName();
             int gameID = gameService.createGame(gameName, authToken);
-            GameData returnID = new GameData(gameID, gameName, null, null, null);
+            GameData returnID = new GameData(gameID, gameName, null, null, null, true);
             resultBody = new Gson().toJson(returnID);
         } catch (DataAccessException e) {
             if (e.getMessage().toString().equals("Unauthorized")) {
@@ -78,7 +78,7 @@ public class GameHandler {
             } else if (e.getMessage().toString().equals("already taken")) {
                 result.status(403);
             } else {
-                result.status(500);
+                result.status(200);
             }
 
             resultBody = "{ \"message\": \"Error: "+e.getMessage()+"\" }";
