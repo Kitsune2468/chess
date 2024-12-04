@@ -40,12 +40,13 @@ public class BoardPrinter {
     private void printRow(ChessBoard board, int rowNumber, String colorBoard, Collection<ChessMove> possibleMoves) {
         printEdgeSpace(Integer.toString(rowNumber));
         for (int col = 0; col < 8; col++) {
-            setBackColor(rowNumber, col, colorBoard, possibleMoves);
+            setBackColor(rowNumber, col+1, colorBoard, possibleMoves);
             printSpace(board.getPiece(new ChessPosition(rowNumber, col+1)));
         }
         printEdgeSpace(Integer.toString(rowNumber));
         System.out.println("");
     }
+
 
     private void setBackColor(int rowNumber, int colNumber, String colorBoard, Collection<ChessMove> possibleMoves) {
         int perspectiveRow;
@@ -54,7 +55,7 @@ public class BoardPrinter {
         } else {
             perspectiveRow = rowNumber;
         }
-        if (perspectiveRow % 2 == (colNumber+1) % 2) {
+        if (perspectiveRow % 2 == colNumber % 2) {
             System.out.print(SET_BG_COLOR_LIGHT_GREY);
         } else {
             System.out.print(SET_BG_COLOR_DARK_GREY);
@@ -64,15 +65,15 @@ public class BoardPrinter {
             return;
         }
         for (ChessMove move : possibleMoves) {
-            if (checkPosition == move.getEndPosition()) {
-                if (perspectiveRow % 2 == 1 && colNumber % 2 == 1) {
-                    System.out.print(SET_BG_COLOR_DARK_GREEN);
+            if (Objects.equals(checkPosition, move.getEndPosition())) {
+                if (perspectiveRow % 2 == colNumber % 2) {
+                    System.out.print(SET_BG_COLOR_GREEN2);
                 } else {
-                    System.out.print(SET_BG_COLOR_GREEN);
+                    System.out.print(SET_BG_COLOR_GREEN1);
                 }
             }
-            if (checkPosition == move.getStartPosition()) {
-                System.out.print(SET_BG_COLOR_YELLOW);
+            if (Objects.equals(checkPosition, move.getStartPosition())) {
+                System.out.print(SET_BG_COLOR_RED);
             }
         }
     }

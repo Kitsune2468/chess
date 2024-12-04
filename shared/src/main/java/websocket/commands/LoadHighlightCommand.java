@@ -17,7 +17,7 @@ public class LoadHighlightCommand extends UserGameCommand{
     private ChessPosition startPosition;
 
     public LoadHighlightCommand(String authToken, Integer gameID, ChessPosition startPosition) {
-        super(CommandType.LOAD_GAME, authToken, gameID);
+        super(CommandType.HIGHLIGHT, authToken, gameID);
         this.startPosition = startPosition;
     }
 

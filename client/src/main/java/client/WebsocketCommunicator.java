@@ -61,7 +61,7 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     private void handleLoadHighlight(LoadHighlightMessage result) {
-        facade.drawBoard(result.getGameData());
+        facade.drawHighlightBoard(result.getGameData(),result.getPossibleMoves());
     }
 
 }

@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import handlers.WebSocketHandler;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
@@ -98,6 +100,10 @@ public class ServerFacade {
 
     public void drawBoard(GameData gameData) {
         printer.printBoard(gameData,currentUser);
+    }
+
+    public void drawHighlightBoard(GameData gameData, Collection<ChessMove> possibleMoves) {
+        printer.printBoard(gameData, currentUser, possibleMoves);
     }
 
 }
