@@ -63,7 +63,7 @@ public class SQLGameDAO implements GameDAO {
             }
         } catch (SQLException e) {
             //return null;
-            throw new DataAccessException("Game with ID: " + gameID + " could not be found");
+            throw new DataAccessException("bad request");
         }
     }
 
