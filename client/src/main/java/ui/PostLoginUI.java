@@ -151,7 +151,6 @@ public class PostLoginUI {
             gameName = line.strip();
             server.createGame(gameName);
             System.out.println("Created new game: "+gameName);
-            printWhiteBoard(new ChessBoard());
         } catch (Exception e) {
             System.out.println("Error in createGame: "+e.getMessage());
         }

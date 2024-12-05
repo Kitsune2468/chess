@@ -62,7 +62,7 @@ public class GamePlayUI{
             help();
         }
 
-        String username = "[Game \""+gameData.gameName()+"\"]";
+        String username = "[Game - \""+gameData.gameName()+"\"]";
         System.out.println("Entered Game!");
 
         while(inGame) {
@@ -121,11 +121,6 @@ public class GamePlayUI{
         try {
             printGame(gameData);
             server.sendRedraw(gameID);
-            try {
-                wait(1000);
-            } catch (Exception e) {
-
-            }
         } catch (Exception e) {
             System.out.println("Failed to redraw board: "+e.getMessage());
         }
@@ -300,6 +295,14 @@ public class GamePlayUI{
             }
         }
         return foundTeam;
+    }
+
+    public void tryWait() {
+        try {
+            wait(1000);
+        } catch (Exception e) {
+
+        }
     }
 
     public void setGameDataForUI(GameData gameData) {
