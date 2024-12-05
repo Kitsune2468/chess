@@ -4,14 +4,12 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
-import handlers.WebSocketHandler;
 import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 import ui.BoardPrinter;
 import ui.GamePlayUI;
 import websocket.commands.*;
-import websocket.messages.LoadHighlightMessage;
 
 import java.io.IOException;
 import java.io.InputStream;
