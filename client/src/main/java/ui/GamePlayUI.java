@@ -30,6 +30,7 @@ public class GamePlayUI{
         team = checkTeam(gameData);
         observing = isObserving;
         this.username = username;
+        server.connectGameplayUI(this);
         server.connectWS(username);
     }
 
@@ -67,6 +68,7 @@ public class GamePlayUI{
         while(inGame) {
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
+
             switch (line) {
                 case "redraw":
                     redraw();
@@ -77,6 +79,10 @@ public class GamePlayUI{
                     break;
 
                 case "move":
+                    if (!gameData.gameActive()) {
+                        System.out.println("Game has ended, no moves can be made.");
+                        break;
+                    }
                     if (observing) {
                         System.out.println("You are observing, and cannot make moves.");
                         break;
@@ -85,6 +91,10 @@ public class GamePlayUI{
                     break;
 
                 case "resign":
+                    if (!gameData.gameActive()) {
+                        System.out.println("Game has ended, you cannot resign.");
+                        break;
+                    }
                     if (observing) {
                         System.out.println("You are observing, and cannot resign.");
                         break;
@@ -109,6 +119,7 @@ public class GamePlayUI{
 
     private void redraw() {
         try {
+            printGame(gameData);
             server.sendRedraw(gameID);
             try {
                 wait(1000);
@@ -131,7 +142,6 @@ public class GamePlayUI{
 
     private void move() {
         try {
-            printGame(gameData);
             server.sendRedraw(gameID);
             team = checkTeam(gameData);
             ChessGame.TeamColor checkColor = null;
@@ -166,7 +176,7 @@ public class GamePlayUI{
 
     private void resign() {
         try {
-
+            server.sendResign(gameID);
         } catch (Exception e) {
             System.out.println("Failed to resign: "+e.getMessage());
         }
@@ -290,5 +300,9 @@ public class GamePlayUI{
             }
         }
         return foundTeam;
+    }
+
+    public void setGameDataForUI(GameData gameData) {
+        this.gameData = gameData;
     }
 }

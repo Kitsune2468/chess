@@ -9,6 +9,7 @@ import model.GameData;
 import model.requests.GameListResult;
 import model.requests.GameTemplateResult;
 import ui.BoardPrinter;
+import ui.GamePlayUI;
 import websocket.commands.*;
 import websocket.messages.LoadHighlightMessage;
 
@@ -27,6 +28,7 @@ public class ServerFacade {
     String domain;
     String currentUser;
     BoardPrinter printer;
+    GamePlayUI gamePlayUI;
 
     HttpCommunicator http;
     WebsocketCommunicator ws;
@@ -109,11 +111,21 @@ public class ServerFacade {
         sendCommand(new LeaveSessionCommand(authToken,gameID));
     }
 
+    public void connectGameplayUI(GamePlayUI gamePlayUI) {
+        this.gamePlayUI = gamePlayUI;
+    }
+
+    public void sendResign(int gameID) {
+        sendCommand(new ResignCommand(authToken,gameID));
+    }
+
     public void drawBoard(GameData gameData) {
+        gamePlayUI.setGameDataForUI(gameData);
         printer.printBoard(gameData,currentUser);
     }
 
     public void drawHighlightBoard(GameData gameData, Collection<ChessMove> possibleMoves) {
+        gamePlayUI.setGameDataForUI(gameData);
         printer.printBoard(gameData, currentUser, possibleMoves);
     }
 

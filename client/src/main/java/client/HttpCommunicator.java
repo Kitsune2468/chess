@@ -55,7 +55,7 @@ public class HttpCommunicator {
     public GameListResult listGames() throws Exception {
         Map resp = request("GET", "/game",null);
         if (resp.containsKey("Error")) {
-            return null;
+            throw new Exception(String.valueOf(resp.get("Error")));
         }
         String stringResp = new Gson().toJson(resp);
         GameListResult games = new Gson().fromJson(stringResp, GameListResult.class);

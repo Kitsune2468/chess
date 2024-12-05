@@ -123,7 +123,7 @@ public class SQLGameDAO implements GameDAO {
     public ArrayList<GameTemplateResult> getAllGames() throws DataAccessException {
         ArrayList<GameTemplateResult> games = new ArrayList<GameTemplateResult>();
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackusername, chessGame FROM games")) {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackusername, chessGame, gameActive FROM games")) {
                 try (var results = preparedStatement.executeQuery()) {
                     while (results.next()) {
                         int gameID = results.getInt("gameID");
@@ -132,7 +132,8 @@ public class SQLGameDAO implements GameDAO {
                         String blackUsername = results.getString("blackUsername");
                         String jsonGame = results.getString("chessGame");
                         ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
-                        boolean gameActive = results.getBoolean("gameActive");
+                        int gameActiveCol =  results.findColumn("gameActive");
+                        boolean gameActive = results.getBoolean(gameActiveCol);
                         GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName,chessGame, gameActive);
                         games.add(convertedGame);
                     }
@@ -189,6 +190,13 @@ public class SQLGameDAO implements GameDAO {
                     preparedStatement.executeUpdate();
                 }
             }
+            if (foundGame.game().isInCheckmate(ChessGame.TeamColor.WHITE)||foundGame.game().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                try {
+                    deactivateGame(authToken, foundGame.gameID());
+                } catch (Exception e) {
+                    throw new DataAccessException(e.getMessage());
+                }
+            }
         } catch (Exception e) {
             throw e;
         }
@@ -213,6 +221,25 @@ public class SQLGameDAO implements GameDAO {
             case null, default:
                 throw new DataAccessException("Failed to resign from game");
         }
+        try {
+            deactivateGame(authToken, gameID);
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
+//        try (var conn = DatabaseManager.getConnection()) {
+//            try (var preparedStatement = conn.prepareStatement("UPDATE games SET gameActive=? WHERE gameID=?")) {
+//                preparedStatement.setBoolean(1,false);
+//                preparedStatement.setInt(2,gameID);
+//
+//                preparedStatement.executeUpdate();
+//            }
+//        } catch (SQLException e) {
+//            throw new DataAccessException(e.getMessage());
+//        }
+        return foundGame;
+    }
+
+    public void deactivateGame(String authToken, int gameID) throws Exception {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement("UPDATE games SET gameActive=? WHERE gameID=?")) {
                 preparedStatement.setBoolean(1,false);
@@ -223,7 +250,6 @@ public class SQLGameDAO implements GameDAO {
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-        return foundGame;
     }
 
     private final String[] createGameStatements = {

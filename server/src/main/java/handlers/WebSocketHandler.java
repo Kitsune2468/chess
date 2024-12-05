@@ -179,13 +179,16 @@ public class WebSocketHandler {
             GameData gameData = server.gameDAO.getGameByID(gameID);
 
             ChessGame.TeamColor teamToLeave = null;
-            if (gameData.whiteUsername().equals(auth.username())) {
-                teamToLeave = ChessGame.TeamColor.WHITE;
+            if (gameData.whiteUsername() != null) {
+                if (gameData.whiteUsername().equals(auth.username())) {
+                    teamToLeave = ChessGame.TeamColor.WHITE;
+                }
             }
-            if (gameData.blackUsername().equals(auth.username())) {
-                teamToLeave = ChessGame.TeamColor.BLACK;
+            if (gameData.blackUsername() != null) {
+                if (gameData.blackUsername().equals(auth.username())) {
+                    teamToLeave = ChessGame.TeamColor.BLACK;
+                }
             }
-
             if (teamToLeave != null) {
                 String leaveTeamString = null;
                 if (teamToLeave == ChessGame.TeamColor.WHITE) {
