@@ -181,8 +181,9 @@ public class SQLGameDAO implements GameDAO {
 
     @Override
     public GameData makeMove(String authToken, GameData gameData, ChessMove givenMove) throws Exception {
+        GameData foundGame;
         try {
-            GameData foundGame = getGameByID(gameData.gameID());
+            foundGame = getGameByID(gameData.gameID());
             foundGame.game().makeMove(givenMove);
             var jsonGame = new Gson().toJson(foundGame.game());
 
@@ -204,7 +205,7 @@ public class SQLGameDAO implements GameDAO {
         } catch (Exception e) {
             throw e;
         }
-        return gameData;
+        return foundGame;
     }
 
     @Override

@@ -97,7 +97,7 @@ public class WebSocketHandler {
 
             LoadGameMessage message = new LoadGameMessage(updatedGame);
             sendBroadcastAll(gameID, message);
-            NotificationMessage madeMoveMessage = new NotificationMessage(auth.username()+" made move: " +givenMove);
+            NotificationMessage madeMoveMessage = new NotificationMessage(auth.username()+" as "+checkColor.toString()+" made move: " +givenMove);
             sendBroadcastExclude(session,gameID,madeMoveMessage);
             System.out.println("Current Sessions: " + currentGameSessions.size());
         } catch (Exception e) {
@@ -158,7 +158,7 @@ public class WebSocketHandler {
             try {
                 LoadGameMessage message = new LoadGameMessage(gameData);
                 sendMessage(session, message);
-                NotificationMessage notification = new NotificationMessage(auth.username() + " connected");
+                NotificationMessage notification = new NotificationMessage(auth.username() + " connected as ");
                 sendBroadcastExclude(session, gameID, notification);
                 System.out.println("Current Sessions: " + currentGameSessions.size());
             } catch (Exception e) {

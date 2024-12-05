@@ -38,7 +38,7 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg);
+        this.session.getAsyncRemote().sendText(msg);
     }
 
     private void handleMessage(String message) {

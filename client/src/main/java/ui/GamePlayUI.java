@@ -138,6 +138,7 @@ public class GamePlayUI{
     private void move() {
         try {
             server.sendRedraw(gameID);
+            Thread.sleep(1000);
             team = checkTeam(gameData);
             ChessGame.TeamColor checkColor = null;
             if (Objects.equals(team, "white")) {
