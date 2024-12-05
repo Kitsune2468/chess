@@ -119,7 +119,7 @@ public class GamePlayUI{
 
     private void redraw() {
         try {
-            printGame(gameData);
+            printer.printGame(gameData);
             server.sendRedraw(gameID);
         } catch (Exception e) {
             System.out.println("Failed to redraw board: "+e.getMessage());
@@ -200,18 +200,7 @@ public class GamePlayUI{
         System.out.println(SET_MENU_OPTION+"leave"+RESET_TEXT_COLOR+" - Leaves the game and returns to main menu");
     }
 
-    private void printGame(GameData game) {
-        String gameName = game.gameName();
-        String blackUser = game.blackUsername();
-        if (blackUser == null) {
-            blackUser = "None";
-        }
-        String whiteUser = game.whiteUsername();
-        if (whiteUser == null) {
-            whiteUser = "None";
-        }
-        System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
-    }
+
 
     private ChessPosition getChessPosition(String positionType) {
         System.out.print("Enter the column and row of the "+positionType+" (Ex: a4, e7, etc.):\n   ");

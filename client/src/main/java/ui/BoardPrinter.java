@@ -2,6 +2,7 @@ package ui;
 
 import chess.*;
 import model.GameData;
+import model.requests.GameTemplateResult;
 
 import java.util.*;
 
@@ -152,6 +153,31 @@ public class BoardPrinter {
             System.out.print(THIN +indicator+THIN);
         }
         System.out.print(RESET_BG_COLOR);
+    }
+    public void printGame(GameData game) {
+        String gameName = game.gameName();
+        String blackUser = game.blackUsername();
+        if (blackUser == null) {
+            blackUser = "None";
+        }
+        String whiteUser = game.whiteUsername();
+        if (whiteUser == null) {
+            whiteUser = "None";
+        }
+        System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
+    }
+
+    public void printGame(GameTemplateResult game) {
+        String gameName = game.gameName();
+        String blackUser = game.blackUsername();
+        if (blackUser == null) {
+            blackUser = "None";
+        }
+        String whiteUser = game.whiteUsername();
+        if (whiteUser == null) {
+            whiteUser = "None";
+        }
+        System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
     }
 
     public void resetConsole() {

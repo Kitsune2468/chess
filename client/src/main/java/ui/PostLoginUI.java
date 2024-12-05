@@ -80,7 +80,7 @@ public class PostLoginUI {
             for (var game:currentGames.games()) {
                 System.out.print(" "+gameCounter+" - ");
                 listOfGames.put(gameCounter,game);
-                printGame(game);
+                printer.printGame(game);
                 gameCounter++;
             }
         } catch (Exception e) {
@@ -177,17 +177,6 @@ public class PostLoginUI {
         System.out.println(SET_MENU_OPTION+"logout"+RESET_TEXT_COLOR+" - Logs out and returns to login menu");
     }
 
-    private void printGame(GameTemplateResult game) {
-        String gameName = game.gameName();
-        String blackUser = game.blackUsername();
-        if (blackUser == null) {
-            blackUser = "None";
-        }
-        String whiteUser = game.whiteUsername();
-        if (whiteUser == null) {
-            whiteUser = "None";
-        }
-        System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
-    }
+
 
 }
