@@ -68,7 +68,4 @@ public class EscapeSequences {
 
     public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
 
-    public static String buffer() {
-        return ("\n\n\n"+moveCursorToLocation(7, 7));
-    }
 }

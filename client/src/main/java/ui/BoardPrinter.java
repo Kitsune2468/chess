@@ -154,7 +154,7 @@ public class BoardPrinter {
         System.out.print(RESET_BG_COLOR);
     }
 
-    public void ResetConsole() {
+    public void resetConsole() {
         System.out.println(ERASE_SCREEN);
     }
 }

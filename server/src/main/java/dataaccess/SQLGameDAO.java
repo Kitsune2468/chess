@@ -26,7 +26,8 @@ public class SQLGameDAO implements GameDAO {
         }
 
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("INSERT INTO games (gameName, chessGame, gameActive) VALUES(?, ?, ?)", RETURN_GENERATED_KEYS)) {
+            String toGrab = "(gameName, chessGame, gameActive) VALUES(?, ?, ?)";
+            try (var statement = conn.prepareStatement("INSERT INTO games "+toGrab, RETURN_GENERATED_KEYS)) {
                 statement.setString(1, gameName);
                 statement.setString(2, jsonGame);
                 statement.setBoolean(3,true);
@@ -48,7 +49,8 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public GameData getGameByID(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameName, whiteUsername, blackusername, chessGame, gameActive FROM games WHERE gameID=?")) {
+            String toGrab = "gameName, whiteUsername, blackusername, chessGame, gameActive";
+            try (var statement = conn.prepareStatement("SELECT "+toGrab+" FROM games WHERE gameID=?")) {
                 statement.setInt(1, gameID);
                 try (var results = statement.executeQuery()) {
                     results.next();
@@ -70,7 +72,8 @@ public class SQLGameDAO implements GameDAO {
     @Override
     public GameData getGameByString(String gameName) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT gameID, whiteUsername, blackusername, chessGame, gameActive FROM games WHERE gameName=?")) {
+            String toGrab = "gameID, whiteUsername, blackusername, chessGame, gameActive";
+            try (var statement = conn.prepareStatement("SELECT "+toGrab+" FROM games WHERE gameName=?")) {
                 statement.setString(1, gameName);
                 try (var results = statement.executeQuery()) {
                     results.next();
@@ -123,18 +126,19 @@ public class SQLGameDAO implements GameDAO {
     public ArrayList<GameTemplateResult> getAllGames() throws DataAccessException {
         ArrayList<GameTemplateResult> games = new ArrayList<GameTemplateResult>();
         try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT gameID, gameName, whiteUsername, blackusername, chessGame, gameActive FROM games")) {
+            String toGrab = "gameID, gameName, whiteUsername, blackusername, chessGame, gameActive";
+            try (var preparedStatement = conn.prepareStatement("SELECT "+toGrab+" FROM games")) {
                 try (var results = preparedStatement.executeQuery()) {
                     while (results.next()) {
                         int gameID = results.getInt("gameID");
                         String gameName = results.getString("gameName");
-                        String whiteUsername = results.getString("whiteUsername");
-                        String blackUsername = results.getString("blackUsername");
+                        String wUser = results.getString("whiteUsername");
+                        String bUser = results.getString("blackUsername");
                         String jsonGame = results.getString("chessGame");
                         ChessGame chessGame = new Gson().fromJson(jsonGame, ChessGame.class);
                         int gameActiveCol =  results.findColumn("gameActive");
                         boolean gameActive = results.getBoolean(gameActiveCol);
-                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, whiteUsername, blackUsername, gameName,chessGame, gameActive);
+                        GameTemplateResult convertedGame = new GameTemplateResult(gameID, wUser, bUser, gameName,chessGame, gameActive);
                         games.add(convertedGame);
                     }
                     return games;
@@ -226,16 +230,7 @@ public class SQLGameDAO implements GameDAO {
         } catch (Exception e) {
             throw new DataAccessException(e.getMessage());
         }
-//        try (var conn = DatabaseManager.getConnection()) {
-//            try (var preparedStatement = conn.prepareStatement("UPDATE games SET gameActive=? WHERE gameID=?")) {
-//                preparedStatement.setBoolean(1,false);
-//                preparedStatement.setInt(2,gameID);
-//
-//                preparedStatement.executeUpdate();
-//            }
-//        } catch (SQLException e) {
-//            throw new DataAccessException(e.getMessage());
-//        }
+
         return foundGame;
     }
 

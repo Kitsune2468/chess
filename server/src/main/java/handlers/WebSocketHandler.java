@@ -87,7 +87,8 @@ public class WebSocketHandler {
                 }
             }
             if (!Objects.equals(checkColor, teamToMove)) {
-                ErrorMessage errorMessage = new ErrorMessage("It is not your turn. Please wait for the other player to make their move. You cannot make moves if observing.");
+                String eMessage = "It is not your turn. Please wait for the other player to make their move.";
+                ErrorMessage errorMessage = new ErrorMessage(eMessage+"You cannot make moves if observing.");
                 sendMessage(session, errorMessage);
                 return;
             }

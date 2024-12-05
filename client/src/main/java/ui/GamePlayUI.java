@@ -297,14 +297,6 @@ public class GamePlayUI{
         return foundTeam;
     }
 
-    public void tryWait() {
-        try {
-            wait(1000);
-        } catch (Exception e) {
-
-        }
-    }
-
     public void setGameDataForUI(GameData gameData) {
         this.gameData = gameData;
     }

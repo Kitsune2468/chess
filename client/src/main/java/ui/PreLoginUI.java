@@ -21,7 +21,7 @@ public class PreLoginUI {
         String username = "[Not Logged In]";
         help();
         while(!quit) {
-            printer.ResetConsole();
+            printer.resetConsole();
             System.out.print(username+" >>> ");
             String line = scanner.nextLine();
             switch (line) {
