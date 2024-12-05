@@ -157,23 +157,21 @@ public class BoardPrinter {
     public void printGame(GameData game) {
         String gameName = game.gameName();
         String blackUser = game.blackUsername();
-        if (blackUser == null) {
-            blackUser = "None";
-        }
         String whiteUser = game.whiteUsername();
-        if (whiteUser == null) {
-            whiteUser = "None";
-        }
-        System.out.printf("Game Name: %-10s Black: %-10s White: %-10s\n",gameName,blackUser,whiteUser);
+        printGame2(gameName,blackUser,whiteUser);
     }
 
     public void printGame(GameTemplateResult game) {
         String gameName = game.gameName();
         String blackUser = game.blackUsername();
+        String whiteUser = game.whiteUsername();
+        printGame2(gameName,blackUser,whiteUser);
+    }
+
+    private void printGame2(String gameName, String blackUser, String whiteUser) {
         if (blackUser == null) {
             blackUser = "None";
         }
-        String whiteUser = game.whiteUsername();
         if (whiteUser == null) {
             whiteUser = "None";
         }
