@@ -105,8 +105,8 @@ public class ServerFacade {
         sendCommand(new MakeMoveCommand(authToken,gameID,move));
     }
 
-    public void sendLeaveSession(int gameID, ChessGame.TeamColor teamToLeave) {
-        sendCommand(new LeaveSessionCommand(authToken,gameID, teamToLeave));
+    public void sendLeaveSession(int gameID) {
+        sendCommand(new LeaveSessionCommand(authToken,gameID));
     }
 
     public void drawBoard(GameData gameData) {

@@ -171,14 +171,20 @@ public class WebSocketHandler {
     }
 
     private void handleLeaveSession(Session session, LeaveSessionCommand command) throws DataAccessException {
-        //TODO
         String token = command.getAuthToken();
         int gameID = command.getGameID();
-        ChessGame.TeamColor teamToLeave = command.getTeamToLeave();
 
         try {
             AuthData auth = server.authDAO.getAuthByToken(token);
             GameData gameData = server.gameDAO.getGameByID(gameID);
+
+            ChessGame.TeamColor teamToLeave = null;
+            if (gameData.whiteUsername().equals(auth.username())) {
+                teamToLeave = ChessGame.TeamColor.WHITE;
+            }
+            if (gameData.blackUsername().equals(auth.username())) {
+                teamToLeave = ChessGame.TeamColor.BLACK;
+            }
 
             if (teamToLeave != null) {
                 String leaveTeamString = null;
@@ -187,7 +193,7 @@ public class WebSocketHandler {
                 } else {
                     leaveTeamString = "BLACK";
                 }
-                server.gameDAO.joinGame(gameID,leaveTeamString, null);
+                server.gameDAO.joinGame(gameID, leaveTeamString, null);
             }
 
             currentGameSessions.remove(session);

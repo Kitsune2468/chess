@@ -13,15 +13,8 @@ import java.util.Objects;
  */
 public class LeaveSessionCommand extends UserGameCommand{
 
-    ChessGame.TeamColor teamToLeave;
-
-    public LeaveSessionCommand(String authToken, Integer gameID, ChessGame.TeamColor teamToLeave) {
+    public LeaveSessionCommand(String authToken, Integer gameID) {
         super(CommandType.LEAVE, authToken, gameID);
-        this.teamToLeave = teamToLeave;
-    }
-
-    public ChessGame.TeamColor getTeamToLeave() {
-        return teamToLeave;
     }
 
     @Override
